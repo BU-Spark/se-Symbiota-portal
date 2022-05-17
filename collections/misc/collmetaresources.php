@@ -81,7 +81,7 @@ if($collid && $isEditor){
 						<span class="field-elem"><input name="url" type="text" style="width:600px;" /></span>
 					</div>
 					<?php
-					foreach($langArr as $langCode){
+					//foreach($langArr as $langCode){
 						$langStr = $langCode;
 						if($langCode == 'en') $langStr = (isset($LANG['ENGLISH'])?$LANG['ENGLISH']:'English');
 						elseif($langCode == 'es') $langStr = (isset($LANG['SPANISH'])?$LANG['SPANISH']:'Spanish');
@@ -94,9 +94,9 @@ if($collid && $isEditor){
 								<input name="title-<?php echo $langCode; ?>" type="text" value="Homepage" />
 							</span>
 						</div>
-						<?php
-					}
-					?>
+						//<?php
+					//}
+					//?>
 					<div class="field-block" id="add-link-div">
 						<span class="form-button"><button type="button" value="addLink" onclick="addLink(this.form);"><?php echo (isset($LANG['ADD_LINK'])?$LANG['ADD_LINK']:'Add Link'); ?></button></span>
 					</div>
