@@ -89,7 +89,7 @@ if($collid && $isEditor){
 						elseif($langCode == 'pr') $langStr = (isset($LANG['PORTUGUESE'])?$LANG['PORTUGUESE']:'Portuguese');
 						?>
 						<div class="field-block" style="">
-							<span class="field-label"><?php echo $langArr.(isset($LANG['CAPTION_OVERRIDE'])?$LANG['CAPTION_OVERRIDE']:'Caption override').' ('.$langStr.'):'; ?></span>
+							<span class="field-label"><?php echo implode(',',$langArr).(isset($LANG['CAPTION_OVERRIDE'])?$LANG['CAPTION_OVERRIDE']:'Caption override').' ('.$langStr.'):'; ?></span>
 							<span class="field-elem">
 								<input name="title-<?php echo $langCode; ?>" type="text" value="Homepage" />
 							</span>
