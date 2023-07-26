@@ -21,7 +21,7 @@ ALTER TABLE `omoccurrences`
     CHANGE `recordedBy` `recordedBy` varchar(255) DEFAULT NULL COMMENT 'Collector(s)',
     CHANGE `container` `container` varchar(255) DEFAULT NULL,
     CHANGE `collTrip` `collTrip` varchar(255) DEFAULT NULL,
-    CHANGE `geoWithin` `geoWithin` text DEFAULT NULL,
-    CHANGE `highGeo` `highGeo` text DEFAULT NULL,
+    CHANGE `geoWithin` `geoWithin` varchar(255) DEFAULT NULL,
+    CHANGE `highGeo` `highGeo` varchar(255) DEFAULT NULL,
     CHANGE `prepMethod` `prepMethod` varchar(64) DEFAULT NULL,
     CHANGE `format` `format` varchar(64) DEFAULT NULL;
