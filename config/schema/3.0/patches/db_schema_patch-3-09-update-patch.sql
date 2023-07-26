@@ -3,6 +3,18 @@
 
 -- Undo the changes to the omoccurrences table due to the addition of dropdown tables
 ALTER TABLE `omoccurrences`
+    DROP FOREIGN KEY `FK_omoccurrences_filedUnder`,
+    DROP FOREIGN KEY `FK_omoccurrences_currName`,
+    DROP FOREIGN KEY `FK_omoccurrences_identifiedBy`,
+    DROP FOREIGN KEY `FK_omoccurrences_recordedBy`,
+    DROP FOREIGN KEY `FK_omoccurrences_container`,
+    DROP FOREIGN KEY `FK_omoccurrences_collTrip`,
+    DROP FOREIGN KEY `FK_omoccurrences_geoWithin`,
+    DROP FOREIGN KEY `FK_omoccurrences_highGeo`,
+    DROP FOREIGN KEY `FK_omoccurrences_prepMethod`,
+    DROP FOREIGN KEY `FK_omoccurrences_format`;
+
+ALTER TABLE `omoccurrences`
     CHANGE `filedUnder` `filedUnder` varchar(255) DEFAULT NULL,
     CHANGE `currName` `currName` varchar(255) DEFAULT NULL,
     CHANGE `identifiedBy` `identifiedBy` varchar(255) DEFAULT NULL,
