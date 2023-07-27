@@ -29,3 +29,11 @@ ALTER TABLE `omoccurrences`
 -- Set temporary default values for some NOT NULL required columns
 ALTER TABLE symbiota_309.omoccurrences MODIFY COLUMN herbarium varchar(4) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT "GH" NOT NULL;
 ALTER TABLE symbiota_309.omoccurrences MODIFY COLUMN collid int(10) unsigned DEFAULT 1 NOT NULL;
+
+-- From real data it is discovered that eventDate column does not follow a strict Date format
+SET FOREIGN_KEY_CHECKS=0;
+
+ALTER TABLE `omoccurrences`
+    CHANGE `eventDate` `eventDate` varchar(32) DEFAULT NULL;
+
+SET FOREIGN_KEY_CHECKS=1;
