@@ -25,3 +25,7 @@ ALTER TABLE `omoccurrences`
     CHANGE `highGeo` `highGeo` varchar(255) DEFAULT NULL,
     CHANGE `prepMethod` `prepMethod` varchar(64) DEFAULT NULL,
     CHANGE `format` `format` varchar(64) DEFAULT NULL;
+
+-- Set temporary default values for some NOT NULL required columns
+ALTER TABLE symbiota_309.omoccurrences MODIFY COLUMN herbarium varchar(4) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT "GH" NOT NULL;
+ALTER TABLE symbiota_309.omoccurrences MODIFY COLUMN collid int(10) unsigned DEFAULT 1 NOT NULL;
