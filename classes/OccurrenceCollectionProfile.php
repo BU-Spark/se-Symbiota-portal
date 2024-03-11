@@ -10,7 +10,6 @@ class OccurrenceCollectionProfile extends OmCollections{
 	private $datasetKey;
 	private $endpointKey;
 	private $idigbioKey;
-	private $materialSampleIsActive = false;
 
 	public function __construct($connType = 'readonly'){
 		parent::__construct($connType);
@@ -39,7 +38,6 @@ class OccurrenceCollectionProfile extends OmCollections{
 			}
 			if($r['dynamicProperties'] && strpos($r['dynamicProperties'],'matSample":{"status":1')){
 				$this->collMeta[$r['collid']]['matSample'] = 1;
-				$this->materialSampleIsActive = true;
 			}
 			$uDate = '';
 			if($r['uploaddate']){
@@ -516,7 +514,7 @@ class OccurrenceCollectionProfile extends OmCollections{
 			ob_flush();
 		}
 		$occurMaintenance->generalOccurrenceCleaning();
-		$occurMaintenance->batchUpdateGeoreferenceIndex();
+		//$occurMaintenance->batchUpdateGeoreferenceIndex();
 		if($verbose){
 			echo '<li>Updating statistics...</li>';
 			flush();
@@ -923,14 +921,11 @@ class OccurrenceCollectionProfile extends OmCollections{
 	public function traitCodingActivated(){
 		$bool = false;
 		$sql = 'SELECT traitid FROM tmtraits LIMIT 1';
-		$rs = $this->conn->query($sql);
-		if($rs->num_rows) $bool = true;
-		$rs->free();
+		if($rs = $this->conn->query($sql)){
+			if($rs->num_rows) $bool = true;
+			$rs->free();
+		}
 		return $bool;
-	}
-
-	public function materialSampleIsActive(){
-		return $this->materialSampleIsActive;
 	}
 
 	//Misc functions

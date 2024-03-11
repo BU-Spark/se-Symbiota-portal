@@ -629,39 +629,42 @@ class SpecUploadBase extends SpecUpload{
 			'WHERE u.collid IN('.$this->collId.') AND u.endDayOfYear IS NULL AND u.eventDate2 IS NOT NULL';
 		$this->conn->query($sql);
 
-		$sql = 'UPDATE IGNORE uploadspectemp u '.
-			'SET u.eventDate = CONCAT_WS("-",LPAD(u.year,4,"19"),IFNULL(LPAD(u.month,2,"0"),"00"),IFNULL(LPAD(u.day,2,"0"),"00")) '.
-			'WHERE (u.eventDate IS NULL) AND (u.year > 1300) AND (u.year <= '.date('Y').') AND (collid = IN('.$this->collId.'))';
+		$sql = 'UPDATE IGNORE uploadspectemp u
+			SET u.eventDate = CONCAT_WS("-",LPAD(u.year,4,"19"),IFNULL(LPAD(u.month,2,"0"),"00"),IFNULL(LPAD(u.day,2,"0"),"00"))
+			WHERE (u.eventDate IS NULL) AND (u.year > 1300) AND (u.year <= '.date('Y').') AND (collid IN('.$this->collId.'))';
 		$this->conn->query($sql);
 
-		$this->outputMsg('<li style="margin-left:10px;">Cleaning country and state/province ...</li>');
-		//Convert country abbreviations to full spellings
-		$sql = 'UPDATE uploadspectemp u INNER JOIN lkupcountry c ON u.country = c.iso3 '.
-			'SET u.country = c.countryName '.
-			'WHERE (u.collid IN('.$this->collId.'))';
-		$this->conn->query($sql);
-		$sql = 'UPDATE uploadspectemp u INNER JOIN lkupcountry c ON u.country = c.iso '.
-			'SET u.country = c.countryName '.
-			'WHERE u.collid IN('.$this->collId.')';
-		$this->conn->query($sql);
+		if(!$this->isNewInstall()){
+			//Temporary code needed to adjust for lookup tables being left out of v3.0
+			$this->outputMsg('<li style="margin-left:10px;">Cleaning country and state/province ...</li>');
+			//Convert country abbreviations to full spellings
+			$sql = 'UPDATE uploadspectemp u INNER JOIN lkupcountry c ON u.country = c.iso3 '.
+				'SET u.country = c.countryName '.
+				'WHERE (u.collid IN('.$this->collId.'))';
+			$this->conn->query($sql);
+			$sql = 'UPDATE uploadspectemp u INNER JOIN lkupcountry c ON u.country = c.iso '.
+				'SET u.country = c.countryName '.
+				'WHERE u.collid IN('.$this->collId.')';
+			$this->conn->query($sql);
 
-		//Convert state abbreviations to full spellings
-		$sql = 'UPDATE uploadspectemp u INNER JOIN lkupstateprovince s ON u.stateProvince = s.abbrev '.
-			'SET u.stateProvince = s.stateName '.
-			'WHERE u.collid IN('.$this->collId.')';
-		$this->conn->query($sql);
+			//Convert state abbreviations to full spellings
+			$sql = 'UPDATE uploadspectemp u INNER JOIN lkupstateprovince s ON u.stateProvince = s.abbrev '.
+				'SET u.stateProvince = s.stateName '.
+				'WHERE u.collid IN('.$this->collId.')';
+			$this->conn->query($sql);
 
-		//Fill null country with state matches
-		$sql = 'UPDATE uploadspectemp u INNER JOIN lkupstateprovince s ON u.stateprovince = s.statename '.
-			'INNER JOIN lkupcountry c ON s.countryid = c.countryid '.
-			'SET u.country = c.countryName '.
-			'WHERE u.country IS NULL AND c.countryname = "United States" AND u.collid IN('.$this->collId.')';
-		$this->conn->query($sql);
-		$sql = 'UPDATE uploadspectemp u INNER JOIN lkupstateprovince s ON u.stateprovince = s.statename '.
-			'INNER JOIN lkupcountry c ON s.countryid = c.countryid '.
-			'SET u.country = c.countryName '.
-			'WHERE u.country IS NULL AND u.collid IN('.$this->collId.')';
-		$this->conn->query($sql);
+			//Fill null country with state matches
+			$sql = 'UPDATE uploadspectemp u INNER JOIN lkupstateprovince s ON u.stateprovince = s.statename '.
+				'INNER JOIN lkupcountry c ON s.countryid = c.countryid '.
+				'SET u.country = c.countryName '.
+				'WHERE u.country IS NULL AND c.countryname = "United States" AND u.collid IN('.$this->collId.')';
+			$this->conn->query($sql);
+			$sql = 'UPDATE uploadspectemp u INNER JOIN lkupstateprovince s ON u.stateprovince = s.statename '.
+				'INNER JOIN lkupcountry c ON s.countryid = c.countryid '.
+				'SET u.country = c.countryName '.
+				'WHERE u.country IS NULL AND u.collid IN('.$this->collId.')';
+			$this->conn->query($sql);
+		}
 
 		$this->outputMsg('<li style="margin-left:10px;">Cleaning coordinates...</li>');
 		$sql = 'UPDATE uploadspectemp '.
@@ -837,9 +840,14 @@ class SpecUploadBase extends SpecUpload{
 			if($this->collMetadataArr["managementtype"] == 'Snapshot' || $this->uploadType == $this->SKELETAL){
 				//Match records that were processed via the portal, walked back to collection's central database, and come back to portal
 				$this->outputMsg('<li style="margin-left:10px;">Populating source identifiers (dbpk) to relink specimens processed within portal...</li>');
-				$sql = 'UPDATE IGNORE uploadspectemp u INNER JOIN omoccurrences o ON (u.catalogNumber = o.catalogNumber) AND (u.collid = o.collid) '.
-					'SET u.occid = o.occid, o.dbpk = u.dbpk '.
-					'WHERE (u.collid IN('.$this->collId.')) AND (u.occid IS NULL) AND (o.dbpk IS NULL) AND (u.catalogNumber IS NOT NULL) ';
+				$sql = 'UPDATE IGNORE uploadspectemp u INNER JOIN omoccurrences o ON (u.occurrenceID = o.occurrenceID) AND (u.collid = o.collid)
+					SET u.occid = o.occid, o.dbpk = u.dbpk
+					WHERE (u.collid IN('.$this->collId.')) AND (u.occid IS NULL) AND (o.dbpk IS NULL) ';
+				$this->conn->query($sql);
+
+				$sql = 'UPDATE IGNORE uploadspectemp u INNER JOIN omoccurrences o ON (u.catalogNumber = o.catalogNumber) AND (u.collid = o.collid)
+					SET u.occid = o.occid, o.dbpk = u.dbpk
+					WHERE (u.collid IN('.$this->collId.')) AND (u.occid IS NULL) AND (o.dbpk IS NULL)';
 				$this->conn->query($sql);
 			}
 
@@ -1265,59 +1273,102 @@ class SpecUploadBase extends SpecUpload{
 	}
 
 	protected function transferIdentificationHistory(){
+		$identificationsExist = false;
 		$sql = 'SELECT count(*) AS cnt FROM uploaddetermtemp WHERE (collid IN('.$this->collId.'))';
 		$rs = $this->conn->query($sql);
 		if($r = $rs->fetch_object()){
-			if($r->cnt){
-				$this->outputMsg('<li>Transferring Determination History...</li>');
+			if($r->cnt) $identificationsExist = true;
+		}
+		$rs->free();
 
-				//Update occid for determinations of occurrence records already in portal
-				$sql = 'UPDATE uploaddetermtemp ud INNER JOIN uploadspectemp u ON ud.collid = u.collid AND ud.dbpk = u.dbpk '.
-					'SET ud.occid = u.occid '.
-					'WHERE (ud.occid IS NULL) AND (u.occid IS NOT NULL) AND (ud.collid IN('.$this->collId.'))';
-				if(!$this->conn->query($sql)){
-					$this->outputMsg('<li style="margin-left:20px;">WARNING updating occids within uploaddetermtemp: '.$this->conn->error.'</li> ');
-				}
+		if($identificationsExist){
+			$this->outputMsg('<li>Transferring Determination History...</li>');
 
-				//Update determinations where the sourceIdentifiers match
+			//Update occid for determinations of occurrence records already in portal
+			$sql = 'UPDATE uploaddetermtemp ud INNER JOIN uploadspectemp u ON ud.collid = u.collid AND ud.dbpk = u.dbpk '.
+				'SET ud.occid = u.occid '.
+				'WHERE (ud.occid IS NULL) AND (u.occid IS NOT NULL) AND (ud.collid IN('.$this->collId.'))';
+			if(!$this->conn->query($sql)){
+				$this->outputMsg('<li style="margin-left:20px;">WARNING updating occids within uploaddetermtemp: '.$this->conn->error.'</li> ');
+			}
+
+			//Following code is needed to accommodate for a bug in the 3.0 schema where omoccurdeterminations sourceIdentifier field was changed to identificationID
+			//Code can be removed after the 3.1 rollout
+			$isNewInstall = $this->isNewInstall(); 		//Installed using the 3.0 schema install
+
+			//Update determinations where the sourceIdentifiers match
+			$sql = 'UPDATE IGNORE omoccurdeterminations d INNER JOIN uploaddetermtemp u ON d.occid = u.occid '.
+				'SET d.sciname = u.sciname, d.scientificNameAuthorship = u.scientificNameAuthorship, d.identifiedBy = u.identifiedBy, d.dateIdentified = u.dateIdentified, '.
+				'd.identificationQualifier = u.identificationQualifier, d.iscurrent = u.iscurrent, d.identificationReferences = u.identificationReferences, '.
+				'd.identificationRemarks = u.identificationRemarks, d.sourceIdentifier = u.sourceIdentifier '.
+				'WHERE (u.collid IN('.$this->collId.')) AND (d.sourceIdentifier = u.sourceIdentifier)';
+			if($isNewInstall){
 				$sql = 'UPDATE IGNORE omoccurdeterminations d INNER JOIN uploaddetermtemp u ON d.occid = u.occid '.
-					'SET d.sciname = u.sciname, d.scientificNameAuthorship = u.scientificNameAuthorship, d.identifiedBy = u.identifiedBy, d.dateIdentified = u.dateIdentified, '.
-					'd.identificationQualifier = u.identificationQualifier, d.iscurrent = u.iscurrent, d.identificationReferences = u.identificationReferences, '.
-					'd.identificationRemarks = u.identificationRemarks, d.sourceIdentifier = u.sourceIdentifier '.
-					'WHERE (u.collid IN('.$this->collId.')) AND (d.sourceIdentifier = u.sourceIdentifier)';
-				//echo $sql;
-				if(!$this->conn->query($sql)){
-					$this->outputMsg('<li style="margin-left:20px;">ERROR updating determinations with matching sourceIdentifiers: '.$this->conn->error.'</li> ');
-				}
-				$sql = 'DELETE u.* FROM omoccurdeterminations d INNER JOIN uploaddetermtemp u ON d.occid = u.occid WHERE (u.collid IN('.$this->collId.')) AND (d.sourceIdentifier = u.sourceIdentifier) ';
-				if(!$this->conn->query($sql)){
-					$this->outputMsg('<li style="margin-left:20px;">ERROR removing determinations with matching sourceIdentifiers: '.$this->conn->error.'</li> ');
-				}
+						'SET d.sciname = u.sciname, d.scientificNameAuthorship = u.scientificNameAuthorship, d.identifiedBy = u.identifiedBy, d.dateIdentified = u.dateIdentified, '.
+						'd.identificationQualifier = u.identificationQualifier, d.iscurrent = u.iscurrent, d.identificationReferences = u.identificationReferences, '.
+						'd.identificationRemarks = u.identificationRemarks, d.identificationID = u.sourceIdentifier '.
+						'WHERE (u.collid IN('.$this->collId.')) AND (d.identificationID = u.sourceIdentifier)';
+			}
+			if(!$this->conn->query($sql)){
+				$this->outputMsg('<li style="margin-left:20px;">ERROR updating determinations with matching sourceIdentifiers: '.$this->conn->error.'</li> ');
+			}
+			$sql = 'DELETE u.* FROM omoccurdeterminations d INNER JOIN uploaddetermtemp u ON d.occid = u.occid
+				WHERE (u.collid IN('.$this->collId.')) AND (d.sourceIdentifier = u.sourceIdentifier) ';
+			if($isNewInstall){
+				$sql = 'DELETE u.* FROM omoccurdeterminations d INNER JOIN uploaddetermtemp u ON d.occid = u.occid
+					WHERE (u.collid IN('.$this->collId.')) AND (d.identificationID = u.sourceIdentifier) ';
+			}
+			if(!$this->conn->query($sql)){
+				$this->outputMsg('<li style="margin-left:20px;">ERROR removing determinations with matching sourceIdentifiers: '.$this->conn->error.'</li> ');
+			}
 
-				//Delete duplicate determinations (likely previously loaded)
-				$sqlDel = 'DELETE IGNORE u.* '.
-					'FROM uploaddetermtemp u INNER JOIN omoccurdeterminations d ON u.occid = d.occid '.
-					'WHERE (u.collid IN('.$this->collId.')) AND (d.sciname = u.sciname) AND (d.identifiedBy = u.identifiedBy) AND (d.dateIdentified = u.dateIdentified)';
-				$this->conn->query($sqlDel);
+			//Delete duplicate determinations (likely previously loaded)
+			$sqlDel = 'DELETE IGNORE u.* '.
+				'FROM uploaddetermtemp u INNER JOIN omoccurdeterminations d ON u.occid = d.occid '.
+				'WHERE (u.collid IN('.$this->collId.')) AND (d.sciname = u.sciname) AND (d.identifiedBy = u.identifiedBy) AND (d.dateIdentified = u.dateIdentified)';
+			$this->conn->query($sqlDel);
 
-				//Load identification history records
+			//Load identification history records
+			$sql = 'INSERT IGNORE INTO omoccurdeterminations (occid, sciname, scientificNameAuthorship, identifiedBy, dateIdentified, '.
+				'identificationQualifier, iscurrent, identificationReferences, identificationRemarks, sourceIdentifier) '.
+				'SELECT u.occid, u.sciname, u.scientificNameAuthorship, u.identifiedBy, u.dateIdentified, '.
+				'u.identificationQualifier, u.iscurrent, u.identificationReferences, u.identificationRemarks, sourceIdentifier '.
+				'FROM uploaddetermtemp u '.
+				'WHERE u.occid IS NOT NULL AND (u.collid IN('.$this->collId.'))';
+			if($isNewInstall){
 				$sql = 'INSERT IGNORE INTO omoccurdeterminations (occid, sciname, scientificNameAuthorship, identifiedBy, dateIdentified, '.
-					'identificationQualifier, iscurrent, identificationReferences, identificationRemarks, sourceIdentifier) '.
+					'identificationQualifier, iscurrent, identificationReferences, identificationRemarks, identificationID) '.
 					'SELECT u.occid, u.sciname, u.scientificNameAuthorship, u.identifiedBy, u.dateIdentified, '.
 					'u.identificationQualifier, u.iscurrent, u.identificationReferences, u.identificationRemarks, sourceIdentifier '.
 					'FROM uploaddetermtemp u '.
 					'WHERE u.occid IS NOT NULL AND (u.collid IN('.$this->collId.'))';
-				if($this->conn->query($sql)){
-					//Delete all determinations
-					$sqlDel = 'DELETE * FROM uploaddetermtemp WHERE (collid IN('.$this->collId.'))';
-					$this->conn->query($sqlDel);
-				}
-				else{
-					$this->outputMsg('<li>FAILED! ERROR: '.$this->conn->error.'</li> ');
-				}
+			}
+			if($this->conn->query($sql)){
+				//Delete all determinations
+				$sqlDel = 'DELETE FROM uploaddetermtemp WHERE (collid IN('.$this->collId.'))';
+				$this->conn->query($sqlDel);
+			}
+			else{
+				$this->outputMsg('<li>FAILED! ERROR: '.$this->conn->error.'</li> ');
+			}
+		}
+	}
+
+	private function isNewInstall(){
+		// Function can be removed after the 3.1 rollout
+		$bool = false;
+		$rs = $this->conn->query('SHOW COLUMNS FROM omoccurdeterminations WHERE Field IN("sourceIdentifier", "identificationID")');
+		while($r = $rs->fetch_object()){
+			if($r->Field == 'identificationID'){
+				$bool = true;
+				break;
+			}
+			elseif($r->Field == 'sourceIdentifier'){
+				break;
 			}
 		}
 		$rs->free();
+		return $bool;
 	}
 
 	private function prepareAssociatedMedia(){
@@ -1574,9 +1625,20 @@ class SpecUploadBase extends SpecUpload{
 			if($this->sourceDatabaseType == 'specify' && (!isset($recMap['occurrenceid']) || !$recMap['occurrenceid'])){
 				if(strlen($recMap['dbpk']) == 36) $recMap['occurrenceid'] = $recMap['dbpk'];
 			}
+			try {
+				$this->buildPaleoJSON($recMap);
+			} catch (Exception $e){
+				$this->outputMsg('<li>Error JSON encoding paleo data for record #'.$this->transferCount.'</li>');
+				$this->outputMsg('<li style="margin-left:10px;">Error: '.$e->getMessage().'</li>');
+			}
+			try {
+				$this->buildMaterialSampleJSON($recMap);
+			} catch (Exception $e){
+				$this->outputMsg('<li>Error JSON encoding material sample data for record #'.$this->transferCount.'</li>');
+				$this->outputMsg('<li style="margin-left:10px;">Error: '.$e->getMessage().'</li>');
+			}
 
-			$this->buildPaleoJSON($recMap);
-			$this->buildMaterialSampleJSON($recMap);
+
 			$sqlFragments = $this->getSqlFragments($recMap,$this->occurFieldMap);
 			if($sqlFragments){
 				$sql = 'INSERT INTO uploadspectemp(collid'.$sqlFragments['fieldstr'].') VALUES('.$this->collId.$sqlFragments['valuestr'].')';
@@ -1610,7 +1672,12 @@ class SpecUploadBase extends SpecUpload{
 					unset($recMap[$k]);
 				}
 			}
-			if($paleoArr) $recMap['paleoJSON'] = json_encode($paleoArr);
+			if($paleoArr){
+				$recMap['paleoJSON'] = json_encode($paleoArr);
+				if(json_last_error() !== JSON_ERROR_NONE){
+					throw new Exception("JSON encoding error: ".json_last_error_msg());
+				}
+			}
 		}
 	}
 
@@ -1624,7 +1691,12 @@ class SpecUploadBase extends SpecUpload{
 					unset($recMap[$fieldName]);
 				}
 			}
-			if($msArr) $recMap['materialSampleJSON'] = json_encode($msArr);
+			if($msArr){
+				$recMap['materialSampleJSON'] = json_encode($msArr);
+				if(json_last_error() !== JSON_ERROR_NONE){
+					throw new Exception("JSON encoding error: ".json_last_error_msg());
+				}
+			}
 		}
 	}
 

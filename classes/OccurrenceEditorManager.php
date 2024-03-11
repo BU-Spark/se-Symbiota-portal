@@ -96,8 +96,8 @@ class OccurrenceEditorManager {
 	public function getDynamicPropertiesArr(){
 		$retArr = array();
 		$propArr = array();
-		if(array_key_exists('dynamicproperties', $this->collMap)){
-			$propArr = json_decode($this->collMap['dynamicproperties'],true);
+		if(!empty($this->collMap['dynamicproperties'])){
+			$propArr = json_decode($this->collMap['dynamicproperties'], true);
 			if(isset($propArr['editorProps'])){
 				$retArr = $propArr['editorProps'];
 				if(isset($retArr['modules-panel'])){
@@ -791,7 +791,8 @@ class OccurrenceEditorManager {
 			//Iterate through occurrences and merge addtional identifiers and otherCatalogNumbers field values
 			foreach($occurrenceArr as $occid => $occurArr){
 				$otherCatNumArr = array();
-				if($ocnStr = trim($occurArr['othercatalognumbers'],',;| ')){
+				if($occurArr['othercatalognumbers']){
+					$ocnStr = trim($occurArr['othercatalognumbers'],',;| ');
 					$ocnStr = str_replace(array(',',';'),'|',$ocnStr);
 					$ocnArr = explode('|',$ocnStr);
 					foreach($ocnArr as $identUnit){
@@ -1600,8 +1601,8 @@ class OccurrenceEditorManager {
 		//Remap identifiers
 		$sql = 'UPDATE omoccuridentifiers SET occid = '.$targetOccid.' WHERE occid = '.$sourceOccid;
 		if(!$this->conn->query($sql)){
-			$this->errorArr[] .= '; '.$LANG['ERROR_REMAPPING_OCCIDS'].': '.$this->conn->error;
-			$status = false;
+			//$this->errorArr[] .= '; '.$LANG['ERROR_REMAPPING_OCCIDS'].': '.$this->conn->error;
+			//$status = false;
 		}
 
 		//Remap exsiccati
@@ -2562,39 +2563,17 @@ class OccurrenceEditorManager {
 	}
 
 	//Misc functions
-	private function encodeStrTargeted($inStr,$inCharset,$outCharset){
+	private function encodeStrTargeted($inStr, $inCharset, $outCharset){
 		if($inCharset == $outCharset) return $inStr;
 		$retStr = $inStr;
-		if($inCharset == "latin" && $outCharset == 'utf8'){
-			if(mb_detect_encoding($retStr,'UTF-8,ISO-8859-1',true) == "ISO-8859-1"){
-				$retStr = utf8_encode($retStr);
-			}
-		}
-		elseif($inCharset == "utf8" && $outCharset == 'latin'){
-			if(mb_detect_encoding($retStr,'UTF-8,ISO-8859-1') == "UTF-8"){
-				$retStr = utf8_decode($retStr);
-			}
-		}
+		$retStr = mb_convert_encoding($retStr, $outCharset, mb_detect_encoding($retStr));
 		return $retStr;
 	}
 
 	protected function encodeStr($inStr){
-		global $CHARSET;
 		$retStr = $inStr;
-
 		if($inStr){
-			if(strtolower($CHARSET) == "utf-8" || strtolower($CHARSET) == "utf8"){
-				if(mb_detect_encoding($inStr,'UTF-8,ISO-8859-1',true) == "ISO-8859-1"){
-					$retStr = utf8_encode($inStr);
-					//$retStr = iconv("ISO-8859-1//TRANSLIT","UTF-8",$inStr);
-				}
-			}
-			elseif(strtolower($CHARSET) == "iso-8859-1"){
-				if(mb_detect_encoding($inStr,'UTF-8,ISO-8859-1') == "UTF-8"){
-					$retStr = utf8_decode($inStr);
-					//$retStr = iconv("UTF-8","ISO-8859-1//TRANSLIT",$inStr);
-				}
-			}
+			$retStr = mb_convert_encoding($retStr, $GLOBALS['CHARSET'], mb_detect_encoding($retStr));
  		}
 		return $retStr;
 	}
@@ -2607,22 +2586,31 @@ class OccurrenceEditorManager {
 	}
 
 	protected function cleanOutStr($str){
-		$newStr = str_replace('"',"&quot;",$str);
-		$newStr = str_replace("'","&apos;",$newStr);
+		$newStr = $str;
+		if($newStr){
+			$newStr = str_replace('"',"&quot;",$str);
+			$newStr = str_replace("'","&apos;",$newStr);
+		}
 		return $newStr;
 	}
 
 	protected function cleanInStr($str){
-		$newStr = trim($str);
-		$newStr = preg_replace('/\s\s+/', ' ',$newStr);
-		$newStr = $this->conn->real_escape_string($newStr);
+		$newStr = $str;
+		if($newStr){
+			$newStr = trim($str);
+			$newStr = preg_replace('/\s\s+/', ' ',$newStr);
+			$newStr = $this->conn->real_escape_string($newStr);
+		}
 		return $newStr;
 	}
 
 	protected function cleanRawFragment($str){
-		$newStr = trim($str);
-		$newStr = $this->encodeStr($newStr);
-		$newStr = $this->conn->real_escape_string($newStr);
+		$newStr = $str;
+		if($newStr){
+			$newStr = trim($str);
+			$newStr = $this->encodeStr($newStr);
+			$newStr = $this->conn->real_escape_string($newStr);
+		}
 		return $newStr;
 	}
 }
