@@ -654,7 +654,7 @@ else{
 										<a href="#occdiv"  style="">
 											<?php
 											if($occId) echo (isset($LANG['OCC_DATA'])?$LANG['OCC_DATA']:'Occurrence Data');
-											else echo '<span style="color:red;">'.(isset($LANG['NEW_OCC_RECORD'])?$LANG['NEW_OCC_RECORD']:'New Occurrence RecorT').'</span>';
+											else echo '<span style="color:red;">'.(isset($LANG['NEW_OCC_RECORD'])?$LANG['NEW_OCC_RECORD']:'New Occurrence Record').'</span>';
 											?>
 										</a>
 									</li>
@@ -906,7 +906,7 @@ else{
 											?>
 										</fieldset>
 										<fieldset>
-											<legend><?php echo (isset($LANG['LATEST_ID'])?$LANG['LATEST_ID']:'Latest'); ?></legend>
+											<legend><?php echo (isset($LANG['LATEST_ID'])?$LANG['LATEST_ID']:'Latest Identification'); ?></legend>
 											<div style="clear:both;">
 												<div id="scinameDiv">
 													<?php echo $LANG['SCINAME']; ?>
@@ -1485,7 +1485,7 @@ else{
 										</fieldset>
 										<?php
 										if($navStr){
-											// echo '<div style="float:right;margin-right:20px;">'.$navStr.'</div>'."\n";
+											//echo '<div style="float:right;margin-right:20px;">'.$navStr.'</div>'."\n";
 										}
 										if(!$occId){
 											$userChecklists = $occManager->getUserChecklists();

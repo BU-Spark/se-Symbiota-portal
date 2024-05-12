@@ -264,7 +264,6 @@ $collManager->cleanOutArr($collData);
 			<?php
 		}
 		?>
-		<h2>test</h2>
 		<div id="tabs" style="margin:0px;">
 			<?php
 			if ($isEditor) {

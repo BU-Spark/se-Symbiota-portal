@@ -346,10 +346,7 @@ class OccurrenceDuplicate {
 				'georeferenceSources', 'georeferenceVerificationStatus', 'georeferenceRemarks',
 				'minimumElevationInMeters', 'maximumElevationInMeters', 'verbatimElevation',
 				'habitat', 'substrate', 'occurrenceRemarks', 'associatedTaxa', 'dynamicProperties',
-				'verbatimAttributes','reproductiveCondition', 'cultivationStatus', 'establishmentMeans', 'typeStatus',
-				// input of the new quick entry form
-				'barcode', 'accesNum', 'fieldUnder', 'currName', 'idQualifier','detText', 'provenance', 'container', 'collTrip', 'geoWithin', 'highGeo', 'frequencey', 'prepMethod', 'format', 'verbLat', 'verbLong', 'method', 'modified', 'dateLastModified'
-			);
+				'verbatimAttributes','reproductiveCondition', 'cultivationStatus', 'establishmentMeans', 'typeStatus');
 			$relArr = array();
 			$sql = 'SELECT c.collectionName, c.institutionCode, c.collectionCode, o.occid, o.collid, o.tidinterpreted, o.catalogNumber, o.otherCatalogNumbers, o.'.implode(',o.',$targetFields).
 				' FROM omcollections c INNER JOIN omoccurrences o ON c.collid = o.collid '.

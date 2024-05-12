@@ -283,16 +283,9 @@ class OccurrenceLabel{
 				'minimumElevationInMeters'=>'o.minimumelevationinmeters', 'maximumElevationInMeters'=>'o.maximumelevationinmeters',
 				'elevationInMeters'=>'CONCAT_WS(" - ",o.minimumElevationInMeters,o.maximumElevationInMeters) AS elevationinmeters', 'verbatimElevation'=>'o.verbatimelevation',
 				'minimumDepthInMeters'=>'minimumdepthinmeters', 'maximumDepthInMeters'=>'maximumdepthinmeters', 'verbatimDepth'=>'verbatimdepth',
-				'disposition'=>'o.disposition', 'storageLocation'=>'storagelocation', 'duplicateQuantity'=>'o.duplicatequantity', 'dateLastModified'=>'o.datelastmodified',
-				// input of the new quick entry form
-				'barcode' => 'o.barcode', 'accesNum' => 'o.accesNum', 'fieldUnder' => 'o.fieldUnder', 'currName' => 'o.currName', 'idQualifier' => 'o.idQualifier',
-				'detText' => 'o.detText', 'provenance' => 'o.provenance', 'container' => 'container', 'collTrip' => 'o.collTrip', 'geoWithin' => 'o.geoWithin',
-				'highGeo' => 'o.highGeo', 'frequency' => 'o.frequency', 'prepMethod' => 'o.prepMethod', 'format' => 'format', 'verbLat' => 'o.verbLat',
-				'verbLong' => 'o.verbLong', 'method' => 'o.method', 'modified' => 'o.modified', 'dateLastModified' => 'o.dateLastModified', 
-			);
+				'disposition'=>'o.disposition', 'storageLocation'=>'storagelocation', 'duplicateQuantity'=>'o.duplicatequantity', 'dateLastModified'=>'o.datelastmodified');
 		}
 	}
-	
 	public function getLabelBlock($blockArr,$occArr){
 		$outStr = '';
 		foreach($blockArr as $bArr){

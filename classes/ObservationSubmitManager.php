@@ -52,10 +52,7 @@ class ObservationSubmitManager {
 
 			$verbatimElevation = $postArr['verbatimelevation'];
 			if(is_numeric($verbatimElevation)) $verbatimElevation .= 'ft.';
-			$sql = 'INSERT INTO omoccurrences(collid, 
-				-- input of the new quick entry form
-				-- need to double check what is this for
-				barcode, accesNum, fieldUnder, currName, idQualifier, detText, provenance, container, collTrip, geoWithin, highGeo, '.
+			$sql = 'INSERT INTO omoccurrences(collid, '.
 				'frequency, prepMethod, format, verbLat, verbLong, method, modified, dateLastModified'.
 				'basisofrecord, family, sciname, scientificname, '.
 				'scientificNameAuthorship, tidinterpreted, taxonRemarks, identifiedBy, dateIdentified, '.

@@ -48,8 +48,6 @@ class OccurrenceEditorManager {
 			'georeferenceremarks' => 's', 'minimumelevationinmeters' => 'n', 'maximumelevationinmeters' => 'n','verbatimelevation' => 's',
 			'minimumdepthinmeters' => 'n', 'maximumdepthinmeters' => 'n', 'verbatimdepth' => 's','disposition' => 's', 'language' => 's', 'duplicatequantity' => 'n',
 			'labelproject' => 's','processingstatus' => 's', 'recordenteredby' => 's', 'observeruid' => 'n', 'dateentered' => 'd',
-			// input of the new quick entry form
-			// The key update of the new quick entry form 
 			'accesNum' => 'n', 'filedUnder' => 's', 'currName' => 's', 'idQualifier' => 's','detText' => 's', 'provenance' => 's', 'container' => 's', 'collTrip' => 's', 'geoWithin' => 's',
 			'highGeo' => 's', 'frequency' => 's', 'prepMethod' => 's', 'format' => 's', 'verbLat' => 's', 'verbLong' => 's', 'method' => 's', 'modified' => 's', 'dateLastModified' => 's', 
 		);
@@ -2098,19 +2096,6 @@ class OccurrenceEditorManager {
 			return $statusStr;
 		}
 	}
-
-	// public function getImgUrl($imgId) {
-	// 	$imgUrl = false;
-	// 	$query = "SELECT sourceIdentifier FROM images WHERE imgid = '$imgId' LIMIT 1";
-	// 	$result = $this->conn->query($query);
-
-	// 	if ($result && $row = $result->fetch_assoc()) {
-	// 		$imgUrl = $row['sourceIdentifier'];
-	// 	}
-	// 	$result->free();
-
-	// 	return $imgUrl;
-	// }
 
 	public function getImageMap($imgId = 0){
 		$imageMap = Array();

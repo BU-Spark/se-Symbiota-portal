@@ -18,9 +18,7 @@ class Occurrence extends Model{
 		'island', 'countryCode', 'locality', 'localitySecurity', 'localitySecurityReason', 'decimalLatitude', 'decimalLongitude', 'geodeticDatum', 'coordinateUncertaintyInMeters',
 		'footprintWKT', 'locationRemarks', 'verbatimCoordinates', 'georeferencedBy', 'georeferencedDate', 'georeferenceProtocol', 'georeferenceSources',
 		'georeferenceVerificationStatus', 'georeferenceRemarks', 'minimumElevationInMeters', 'maximumElevationInMeters', 'verbatimElevation', 'minimumDepthInMeters', 'maximumDepthInMeters',
-		'verbatimDepth', 'availability', 'disposition', 'storageLocation', 'modified', 'language', 'processingstatus', 'recordEnteredBy', 'duplicateQuantity', 'labelProject', 
-		// input of the new quick entry form
-		'barcode', 'accesNum', 'fieldUnder', 'currName', 'idQualifier','detText', 'provenance', 'container', 'collTrip', 'geoWithin', 'highGeo', 'frequencey', 'prepMethod', 'format', 'verbLat', 'verbLong', 'method', 'modified', 'dateLastModified'];
+		'verbatimDepth', 'availability', 'disposition', 'storageLocation', 'modified', 'language', 'processingstatus', 'recordEnteredBy', 'duplicateQuantity', 'labelProject'];
 	protected $hidden = [ 'scientificName', 'recordedbyid', 'observerUid', 'labelProject', 'processingStatus', 'recordEnteredBy', 'associatedOccurrences', 'previousIdentifications',
 		'verbatimCoordinateSystem', 'coordinatePrecision', 'dynamicFields', 'institutionID', 'collectionID', 'genericcolumn1', 'genericcolumn2' ];
 

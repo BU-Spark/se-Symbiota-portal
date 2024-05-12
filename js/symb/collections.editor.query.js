@@ -173,28 +173,6 @@ function submitQueryForm(qryIndex){
 	if(verifyQueryForm(f)) f.submit();
 }
 
-// function navigateToRecordNew(crowdSourceMode, gotomode, collId, batchId, imgId, imgIndex, barcode, occId, occIndex) {
-// 	if(barcode == null && occId == null) {
-// 		var url = 'occurrencequickentry.php?gotomode=' + gotomode + '&collid=' + collId + '&imgid=' + imgId + '&imgindex=' + imgIndex;
-// 	} else {
-// 		var url = 'occurrencequickentry.php?csmode=' + crowdSourceMode + '&collid=' + collId +'&batchid=' + batchId + '&imgid=' + imgId + '&imgindex=' + imgIndex + '&barcode=' + barcode + '&occid=' + occId + '&occindex=' + occIndex;
-// 	}
-// 	window.location.href = url;
-// 	event.preventDefault();
-// }
-
-// function jumpToPage(crowdSourceMode, gotomode, collId, batchId, imgNum) {
-// 	var pageInput = document.getElementById("pageNumber");
-// 	var page = parseInt(pageInput.value);
-// 	if (1 <= page <= imgSize) {
-// 		alert(crowdSourceMode, gotomode, collId, batchId, imgSize)
-// 		// navigateToRecordNew(crowdSourceMode, gotomode, collId, batchId, prevImgid, (currentImgIndex-1), prevBarcode, prevOccid, (currentImgIndex-1));
-// 	} else {
-// 		alert('Please enter a valid page number.');
-// 		return;
-// 	}
-// }
-
 function toggleDetail(){
 	var btn = document.getElementById("detail-btn");
 	if (btn.value === "detailed") {

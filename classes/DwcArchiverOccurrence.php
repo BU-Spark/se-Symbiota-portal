@@ -296,47 +296,6 @@ class DwcArchiverOccurrence extends Manager{
 		$this->occurDefArr['fields']['recordID'] = 'o.recordID';
 		$this->occurDefArr['terms']['references'] = 'http://purl.org/dc/terms/references';
 		$this->occurDefArr['fields']['references'] = '';
-		// input of the new quick entry form
-		// This array is the source of definition of each input. (there is a website that provides the info >> see above)
-		// TODO: can update this part when we have more information
-		$this->occurDefArr['terms']['barcode'] = '';
-		$this->occurDefArr['fields']['barcode'] = '';
-		$this->occurDefArr['terms']['accesNum'] = '';
-		$this->occurDefArr['fields']['accesNum'] = '';
-		$this->occurDefArr['terms']['filedUnder'] = '';
-		$this->occurDefArr['fields']['filedUnder'] = '';
-		$this->occurDefArr['terms']['currName'] = '';
-		$this->occurDefArr['fields']['currName'] = '';
-		$this->occurDefArr['terms']['idQualifier'] = '';
-		$this->occurDefArr['fields']['idQualifier'] = '';
-		$this->occurDefArr['terms']['detText'] = '';
-		$this->occurDefArr['fields']['detText'] = '';
-		$this->occurDefArr['terms']['provenance'] = '';
-		$this->occurDefArr['fields']['provenance'] = '';
-		$this->occurDefArr['terms']['container'] = '';
-		$this->occurDefArr['fields']['container'] = '';
-		$this->occurDefArr['terms']['collTrip'] = '';
-		$this->occurDefArr['fields']['collTrip'] = '';
-		$this->occurDefArr['terms']['geoWithin'] = '';
-		$this->occurDefArr['fields']['geoWithin'] = '';
-		$this->occurDefArr['terms']['highGeo'] = '';
-		$this->occurDefArr['fields']['highGeo'] = '';
-		$this->occurDefArr['terms']['frequency'] = '';
-		$this->occurDefArr['fields']['frequency'] = '';
-		$this->occurDefArr['terms']['prepMethod'] = '';
-		$this->occurDefArr['fields']['prepMethod'] = '';
-		$this->occurDefArr['terms']['format'] = '';
-		$this->occurDefArr['fields']['format'] = '';
-		$this->occurDefArr['terms']['verbLat'] = '';
-		$this->occurDefArr['fields']['verbLat'] = '';
-		$this->occurDefArr['terms']['verbLong'] = '';
-		$this->occurDefArr['fields']['verbLong'] = '';
-		$this->occurDefArr['terms']['method'] = '';
-		$this->occurDefArr['fields']['method'] = '';
-		$this->occurDefArr['terms']['modified'] = '';
-		$this->occurDefArr['fields']['modified'] = '';
-		$this->occurDefArr['terms']['dateLastModified'] = '';
-		$this->occurDefArr['fields']['dateLastModified'] = '';
 
 		if($this->schemaType == 'pensoft'){
 			$this->occurDefArr['fields']['occid'] = 'o.occid';
@@ -352,10 +311,8 @@ class DwcArchiverOccurrence extends Manager{
 			elseif($this->schemaType == 'symbiota'){
 				$trimArr = array();
 				if(!$this->extended){
-					$trimArr = array('collectionID','rights','rightsHolder','accessRights','storageLocation','observerUid','processingStatus','duplicateQuantity','labelProject','dateEntered','dateLastModified',
-									// input of the new quick entry form
-									// TODO: guessing the type, need to double check if it matters
-									'barcode', 'accesNum');
+					$trimArr = array('collectionID','rights','rightsHolder','accessRights','storageLocation','observerUid','processingStatus',
+									'duplicateQuantity','labelProject','dateEntered','dateLastModified');
 				}
 				$this->occurDefArr[$k] = array_diff_key($vArr,array_flip($trimArr));
 			}
@@ -369,11 +326,7 @@ class DwcArchiverOccurrence extends Manager{
 					'locationID','continent','waterBody','islandGroup','island','country','stateProvince','county','municipality',
 					'locality','localitySecurity','geodeticDatum','decimalLatitude','decimalLongitude','verbatimCoordinates',
 					'minimumElevationInMeters','maximumElevationInMeters','verbatimElevation','maximumDepthInMeters','minimumDepthInMeters','establishmentMeans',
-					'occurrenceRemarks','dateEntered','dateLastModified','recordID','references','collID',
-					// input of the new quick entry form
-					// TODO: guessing the type, need to double check if it matters
-					'barcode', 'accesNum', 'filedUnder', 'currName', 'idQualifier','detText', 'provenance', 'container', 'collTrip', 'geoWithin', 'highGeo', 
-					'frequencey', 'prepMethod', 'format', 'verbLat', 'verbLong', 'method');
+					'occurrenceRemarks','dateEntered','dateLastModified','recordID','references','collID');
 				$this->occurDefArr[$k] = array_intersect_key($vArr,array_flip($targetArr));
 			}
 		}
@@ -404,8 +357,6 @@ class DwcArchiverOccurrence extends Manager{
 		$sql .= ' FROM omoccurrences o LEFT JOIN omcollections c ON o.collid = c.collid '.
 			'LEFT JOIN taxa t ON o.tidinterpreted = t.TID ';
 		if($this->includePaleo) $sql .= 'LEFT JOIN omoccurpaleo paleo ON o.occid = paleo.occid ';
-		//if($fullSql) $sql .= ' ORDER BY c.collid ';
-		//echo '<div>'.$sql.'</div>'; exit;
 		return $sql;
 	}
 

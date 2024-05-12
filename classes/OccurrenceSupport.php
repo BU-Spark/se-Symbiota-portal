@@ -161,11 +161,7 @@ class OccurrenceSupport {
 		'establishmentMeans','lifeStage','sex','individualCount','preparations','country','stateProvince',
 		'county','municipality','locality','decimalLatitude','decimalLongitude','geodeticDatum','coordinateUncertaintyInMeters','locationRemarks',
 		'verbatimCoordinates','minimumElevationInMeters','maximumElevationInMeters','verbatimElevation','minimumDepthInMeters',
-		'maximumDepthInMeters','verbatimDepth','dateEntered','dateLastModified',
-		// input of the new quick entry form
-		'barcode', 'accesNum', 'filedUnder', 'currName', 'idQualifier','detText', 'provenance', 'container', 'collTrip', 'geoWithin', 'highGeo', 
-		'frequencey', 'prepMethod', 'format', 'verbLat', 'verbLong', 'method'
-	);
+		'maximumDepthInMeters','verbatimDepth','dateEntered','dateLastModified');
 		//,'samplingProtocol','samplingEffort'
 		$fileName = 'specimenOutput_'.time().'.csv';
 		header ('Cache-Control: must-revalidate, post-check=0, pre-check=0');
