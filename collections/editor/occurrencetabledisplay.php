@@ -47,11 +47,8 @@ $headerMapBase = array('institutioncode'=>'Institution Code (override)','collect
 	'samplingprotocol' => 'Sampling Protocol', 'preparations' => 'Preparations', 'reproductivecondition' => 'Reproductive Condition',
 	'typestatus' => 'Type Status','cultivationstatus' => 'Cultivation Status','establishmentmeans' => 'Establishment Means','datageneralizations' => 'Data Generalizations',
 	'disposition' => 'Disposition','duplicatequantity' => 'Duplicate Qty','datelastmodified' => 'Date Last Modified', 'labelproject' => 'Project',
-	'processingstatus' => 'Processing Satus','recordenteredby' => 'Entered By','dbpk' => 'dbpk','basisofrecord' => 'Basis Of Record',
-	'language' => 'Language', 
-	'barcode'=> 'barcode', 'accesNum' => 'Accession Num.', 'filedUnder' => 'Filed Under', 'currName' => 'Current Name', 'idQualifier' => 'ID Qualifier',
-	'detText' => 'Det. Text', 'provenance' => 'Provenance', 'container' => 'Container', 'collTrip' => 'Collecting Trip', 'geoWithin' => 'Geography Within', 'highGeo' => 'Higher Geography', 
-	'frequencey' => 'Frequency', 'prepMethod' => 'Prep Method', 'format' => 'Format', 'verbLat' => 'Verb. Lat.', 'verbLong' => 'Verb. Long.', 'method' => 'Method');
+	'processingstatus' => 'Processing Status','recordenteredby' => 'Entered By','dbpk' => 'dbpk','basisofrecord' => 'Basis Of Record',
+	'language' => 'Language');
 $headMap = array();
 
 $qryCnt = 0;

@@ -296,7 +296,6 @@ class DwcArchiverOccurrence extends Manager{
 		$this->occurDefArr['fields']['recordID'] = 'o.recordID';
 		$this->occurDefArr['terms']['references'] = 'http://purl.org/dc/terms/references';
 		$this->occurDefArr['fields']['references'] = '';
-
 		if($this->schemaType == 'pensoft'){
 			$this->occurDefArr['fields']['occid'] = 'o.occid';
 		}
@@ -357,6 +356,8 @@ class DwcArchiverOccurrence extends Manager{
 		$sql .= ' FROM omoccurrences o LEFT JOIN omcollections c ON o.collid = c.collid '.
 			'LEFT JOIN taxa t ON o.tidinterpreted = t.TID ';
 		if($this->includePaleo) $sql .= 'LEFT JOIN omoccurpaleo paleo ON o.occid = paleo.occid ';
+		//if($fullSql) $sql .= ' ORDER BY c.collid ';
+		//echo '<div>'.$sql.'</div>'; exit;
 		return $sql;
 	}
 

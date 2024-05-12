@@ -414,8 +414,6 @@ $_SESSION['citationvar'] = $searchVar;
 						<fieldset>
 							<?php
 							$occFieldArr = array(
-								'barcode', 'accesNum', 'filedUnder', 'currName', 'idQualifier','detText', 'provenance', 'container', 'collTrip', 'geoWithin', 'highGeo', 
-								'frequencey', 'prepMethod', 'format', 'verbLat', 'verbLong', 'method',
 								'occurrenceid', 'identifiedby', 'dateidentified', 'identificationreferences',
 								'identificationremarks', 'taxonremarks', 'recordedby', 'recordnumber', 'associatedcollectors', 'eventdate', 'year', 'month', 'day',
 								'verbatimeventdate', 'habitat', 'substrate', 'occurrenceremarks', 'associatedtaxa', 'verbatimattributes',
