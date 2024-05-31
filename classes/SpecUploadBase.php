@@ -1431,6 +1431,15 @@ class SpecUploadBase extends SpecUpload{
 				else{
 					$this->outputMsg('<li>FAILED! ERROR: '.$this->conn->error.'</li> ');
 				}
+				// Create new batch for images
+				$this->outputMsg('<li>Creating new batch... </li>');
+				$sql = "INSERT INTO batch (batch_name, image_batch_path, last_edited, collID) VALUES ('Test Batch', '/batch/test', -1, $this->collId)";
+				if($this->conn->query($sql)){
+					$this->outputMsg('<li>Batch created</li> ');
+				}
+				else{
+					$this->outputMsg('<li style="margin-left:10px;">BATCH FAILED! ERROR: '.$this->conn->error.'</li> ');
+				}
 			}
 		}
 		$rs->free();
