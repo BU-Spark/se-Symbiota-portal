@@ -1433,13 +1433,40 @@ class SpecUploadBase extends SpecUpload{
 				}
 				// Create new batch for images
 				$this->outputMsg('<li>Creating new batch... </li>');
-				$sql = "INSERT INTO batch (batch_name, image_batch_path, last_edited, collID) VALUES ('Test Batch', '/batch/test', -1, $this->collId)";
+				$timestamp = time(); // Get the current timestamp
+				$batchname = 'Batch ' . $timestamp; // Concatenate 'batch' with the timestamp
+				$sql = "INSERT INTO batch (batch_name, image_batch_path, last_edited, collID) VALUES ('$batchname', '/batch/test', -1, $this->collId)";
 				if($this->conn->query($sql)){
-					$this->outputMsg('<li>Batch created</li> ');
+					$this->outputMsg('<li style="margin-left:10px;">Batch created</li> ');
 				}
 				else{
 					$this->outputMsg('<li style="margin-left:10px;">BATCH FAILED! ERROR: '.$this->conn->error.'</li> ');
 				}
+				// Add images to batch
+				$sql_set_ordinal = "SET @ordinal = 0;";
+				if ($this->conn->query($sql_set_ordinal)) {
+					$sql_insert = "
+						INSERT INTO batch_XREF (imgid, batchID, ordinal)
+						SELECT imgid, batchID, @ordinal := @ordinal + 1
+						FROM images
+						CROSS JOIN (
+							SELECT batchID, initialtimestamp 
+							FROM batch 
+							ORDER BY batchID DESC 
+							LIMIT 1
+						) latest_batch
+						WHERE images.initialtimestamp = latest_batch.initialtimestamp;
+					";
+					
+					if ($this->conn->query($sql_insert)) {
+						$this->outputMsg('<li style="margin-left:10px;">Images added to batch</li>');
+					} else {
+						$this->outputMsg('<li style="margin-left:10px;">BATCH FAILED! ERROR: ' . $this->conn->error . '</li>');
+					}
+				} else {
+					$this->outputMsg('<li style="margin-left:10px;">BATCH FAILED! ERROR: ' . $this->conn->error . '</li>');
+				}
+
 			}
 		}
 		$rs->free();
