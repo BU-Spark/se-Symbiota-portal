@@ -1434,7 +1434,8 @@ class SpecUploadBase extends SpecUpload{
 				// Create new batch for images
 				$this->outputMsg('<li>Creating new batch... </li>');
 				$timestamp = time(); // Get the current timestamp
-				$batchname = 'Batch ' . $timestamp; // Concatenate 'batch' with the timestamp
+				$readableTimestamp = date('Y-m-d H:i:s', $timestamp); // Convert the timestamp to a human-readable format
+				$batchname = 'Batch ' . $readableTimestamp; // Concatenate 'batch' with the timestamp
 				$sql = "INSERT INTO batch (batch_name, image_batch_path, last_edited, collID) VALUES ('$batchname', '/batch/test', -1, $this->collId)";
 				if($this->conn->query($sql)){
 					$this->outputMsg('<li style="margin-left:10px;">Batch created</li> ');
