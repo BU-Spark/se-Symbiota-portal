@@ -10,6 +10,8 @@ CREATE TABLE `batch` (
   `batch_name` varchar(100) NOT NULL,
   `image_batch_path` varchar(100) NOT NULL,
   `initialtimestamp` TIMESTAMP NULL DEFAULT current_timestamp,
+  `last_edited` int(11) NULL,
+  `collID` int(11) NOT NULL,
   PRIMARY KEY (`batchID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
