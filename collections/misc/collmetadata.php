@@ -237,9 +237,6 @@ $collManager->cleanOutArr($collData);
 </head>
 
 <body>
-	<?php echo $collid . "<br />" ?>
-	<?php echo $tabIndex . "<br />" ?>
-	<?php echo $action . "<br />" ?>
 	<?php
 	$displayLeftMenu = (isset($collections_misc_collmetadataMenu) ? $collections_misc_collmetadataMenu : true);
 	include($SERVER_ROOT . '/includes/header.php');
