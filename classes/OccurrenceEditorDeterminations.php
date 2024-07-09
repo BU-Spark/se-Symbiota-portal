@@ -50,6 +50,17 @@ class OccurrenceEditorDeterminations extends OccurrenceEditorManager{
         return $batchValues;
 	}
 
+	public function getBatchName($batchID) {
+		$nameValues = array();
+		$query = "SELECT batch_name FROM batch WHERE batchID = '$batchID'";
+		$result = $this->conn->query($query);
+		while ($row = $result->fetch_assoc()) {
+			$nameValues[] = $row['batch_name'];
+		}
+		$result->free();
+		return $nameValues;
+	}
+
 	public function getImgIDs($batchID) {
 		$imgIDs = array();
 		$query = "SELECT imgid FROM batch_XREF WHERE batchID = '$batchID'";

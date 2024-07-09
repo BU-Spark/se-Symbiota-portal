@@ -139,7 +139,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 									<option value="">-- Select Batch --</option>
 									<?php
 									foreach ($batchIds as $batchID) {
-										echo "<option value=\"$batchID\">Batch $batchID</option>";
+										$batch_name = current($occManager->getbatchName($batchID));
+										echo "<option value=\"$batchID\">$batch_name</option>";
 									}
 									?>
 								</select>
