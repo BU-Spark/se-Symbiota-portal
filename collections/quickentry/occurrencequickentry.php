@@ -475,7 +475,7 @@ if($SYMB_UID){
 		$imgUrlPrefix = (isset($IMAGE_DOMAIN)?$IMAGE_DOMAIN:'');
 		$imgCnt = 1;
 		foreach($specImgArr as $imgId => $i2){
-			$iUrl = $i2['url'];
+			$iUrl = $i2['origurl'];
 			if($iUrl == 'empty' && $i2['origurl']) $iUrl = $i2['origurl'];
 			if($imgUrlPrefix && substr($iUrl,0,4) != 'http') $iUrl = $imgUrlPrefix.$iUrl;
 			$imgArr[$imgCnt]['imgid'] = $imgId;
