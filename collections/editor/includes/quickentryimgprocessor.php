@@ -108,7 +108,7 @@ else include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/imgpro
 				<?php $currentImageId = 0; ?>
 				<div id="labeldiv-<?php echo $currentImageId; ?>">
 					<div>
-						<img id="activeimg" src="<?php echo($imgUrlCollection[$currentImageId]) ?>" style="height:400px;" onload="initImageTool('activeimg-<?php echo $currentImageId; ?>')" />
+						<img id="activeimg-<?php echo $currentImageId; ?>" src="<?php echo($imgUrlCollection[$currentImageId]) ?>" style="height:400px;" onload="initImageTool('activeimg-<?php echo $currentImageId; ?>')" />
 					</div>
 					<div style="width:100%; clear:both;">
 						<div style="float:right; margin-right:20px; font-weight:bold;">
