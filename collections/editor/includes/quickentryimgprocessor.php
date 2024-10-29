@@ -37,7 +37,7 @@ else include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/imgpro
 		});
 	});
 	function rotateImage(rotationAngle){
-		var imgObj = document.getElementById("activeimg-<?php echo ($imgCnt); ?>");
+		var imgObj = document.getElementById("activeimg-0");
 		var imgAngle = 0;
 		if(imgObj.style.transform){
 			var transformValue = imgObj.style.transform;

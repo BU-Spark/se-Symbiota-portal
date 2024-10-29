@@ -513,6 +513,7 @@ else{
 		<title><?php echo $DEFAULT_TITLE.' '.(isset($LANG['OCCEDITOR'])?$LANG['OCCEDITOR']:'Occurrence Editor'); ?></title>
 		<link href="<?php echo $CSS_BASE_PATH; ?>/jquery-ui.css" type="text/css" rel="stylesheet">
 		<link rel="stylesheet" href="../../css/quickentry.css" type="text/css">
+		<link rel="stylesheet" href="../../css/v202209/symbiota/main.css" type="text/css">
 		<script src="../../js/jquery.js?ver=140310" type="text/javascript"></script>
 		<script src="../../js/jquery-ui.js?ver=140310" type="text/javascript"></script>
 		<script type="text/javascript">
@@ -625,12 +626,14 @@ else{
 		</script>
 	</head>
 <body>
-	<div id="innertext">
+	<div>
 		<div id="top">
 			<div id="titleDiv">
+				<h2>
 				<?php
 					if($collMap) echo $collMap['collectionname'].' ('.$collMap['institutioncode'].($collMap['collectioncode']?':'.$collMap['collectioncode']:'').')'; 
 				?>
+				</h2>
 			</div>
 			<?php
 			if($isEditor && ($occId || ($collId && $isEditor < 3))){
@@ -717,7 +720,7 @@ else{
 		<div id="editdiv">
 			<div class = "row">
 				<section>
-					<div class="btn function-bar" name="jumpform">
+					<div class="btn" name="jumpform">
 						<form method="post" style="margin: 5px;">
 							<button type="submit" name="toggle-button" value="<?php echo isset($_POST['toggle-button']) && $_POST['toggle-button'] === 'Minimal' ? 'Detailed' : 'Minimal'; ?>">
 								<?php echo isset($_POST['toggle-button']) ? $_POST['toggle-button'] : 'Detailed'; ?>
@@ -746,187 +749,189 @@ else{
 				<form id="fullform" name="fullform" action="occurrencequickentry.php" method="post" onsubmit="return verifyFullForm(this);">
 					<!-- navigation bar -->
 					<!-- left part of the form starts -->
-					<div class = "column left login-info" style = "background-color: #F2F2F2; ">
+					<div class = "column left">
 						<div class="field-block title">
-							<h2>Transcribe into Fields</h2>
+							<h3>Transcribe into Fields</h3>
 						</div>
-						<div class="field-block">
-							<span class="field-label"><?php echo (isset($LANG['BARCODE']) ? $LANG['BARCODE'] : 'Barcode'); ?></span>
-							<span class="field-elem">
-								<input type="text" size = '50' id="barcode" name="barcode" value="<?php echo($barcode) ?>" onchange="fieldChanged('barcode');" <?php if($isEditor > 2) echo 'disabled'; ?> autocomplete="off" />
-							</span>
-						</div>
-						<?php if(!isset($_POST['toggle-button']) || (isset($_POST['toggle-button']) && $_POST['toggle-button'] != 'Minimal')): ?>
+						<div class = "login-info" style = "background-color: #F2F2F2;">
 							<div class="field-block">
-								<span class="field-label"><?php echo (isset($LANG['ACCES_NUM']) ? $LANG['ACCES_NUM'] : 'Accession Num.'); ?></span>
+								<span class="field-label"><?php echo (isset($LANG['BARCODE']) ? $LANG['BARCODE'] : 'Barcode'); ?></span>
 								<span class="field-elem">
-									<input type="text" size = '50' name="accesNum" value="<?php echo $occArr["accesNum"]; ?>" onchange="fieldChanged('accesNum');" />
+									<input type="text" size = '50' id="barcode" name="barcode" value="<?php echo($barcode) ?>" onchange="fieldChanged('barcode');" <?php if($isEditor > 2) echo 'disabled'; ?> autocomplete="off" />
 								</span>
 							</div>
-						<?php endif; ?>
-						<div id="filedUnderDiv" class="field-block">
-							<span class="field-label"><?php echo (isset($LANG['FILED_UNDER']) ? $LANG['FILED_UNDER'] : 'Filed Under'); ?></span>
-							<span class="field-elem">
-								<?php if(array_key_exists('filedUnder',$occArr)) { 
-									$filedUnderValue = isset($filedUnderDrop[$occArr["filedUnder"]]) ? $filedUnderDrop[$occArr["filedUnder"]] : null;
-								}
-								?>	
-								<input type="text" size="50" name="filedUnder" id="fffileunder" value="<?php echo array_key_exists('filedUnder',$occArr)?$occArr['filedUnder']:''; ?>" onchange="fieldChanged('filedUnder');" <?php if($isEditor > 2) echo 'disabled'; ?>/>
-							</span>
-						</div>
-						<div class="field-block">
-							<span class="field-label"><?php echo (isset($LANG['CURR_NAME']) ? $LANG['CURR_NAME'] : 'Current Name'); ?></span>
-							<span class="field-elem">
-								<input type="text" size = '50' name="currName" id="ffcurrname" value="<?php echo $occArr["currName"]; ?>" onchange="fieldChanged('currName');" />
-							</span>
-						</div>
-						<?php if(!isset($_POST['toggle-button']) || (isset($_POST['toggle-button']) && $_POST['toggle-button'] != 'Minimal')): ?>
-							<div class="field-block">
-								<span class="field-label"><?php echo (isset($LANG['IDQUALIFIER']) ? $LANG['IDQUALIFIER'] : 'ID Qualifier'); ?></span>
+							<?php if(!isset($_POST['toggle-button']) || (isset($_POST['toggle-button']) && $_POST['toggle-button'] != 'Minimal')): ?>
+								<div class="field-block">
+									<span class="field-label"><?php echo (isset($LANG['ACCES_NUM']) ? $LANG['ACCES_NUM'] : 'Accession Num.'); ?></span>
+									<span class="field-elem">
+										<input type="text" size = '50' name="accesNum" value="<?php echo $occArr["accesNum"]; ?>" onchange="fieldChanged('accesNum');" />
+									</span>
+								</div>
+							<?php endif; ?>
+							<div id="filedUnderDiv" class="field-block">
+								<span class="field-label"><?php echo (isset($LANG['FILED_UNDER']) ? $LANG['FILED_UNDER'] : 'Filed Under'); ?></span>
 								<span class="field-elem">
-									<select name="idQualifier" onchange="fieldChanged('idQualifier');">
-										<option value=""><?php echo $LANG['IDQUALIFIER']; ?>Select Your ID Qualifier</option>
-										<option value="">---------------------------------------</option>
-										<?php
-										$idqArr = array('s. str.', '?', 'not', 'cf.', 's. lat.', 'aff.');
-										foreach ($idqArr as $k) {
-											$selected = ($k == $occArr['idQualifier']) ? 'selected' : '';
-											echo '<option value="' . $k . '" ' . $selected . '>' . $k . '</option>' . "\n";
-										}
-										?>
-									</select>
+									<?php if(array_key_exists('filedUnder',$occArr)) { 
+										$filedUnderValue = isset($filedUnderDrop[$occArr["filedUnder"]]) ? $filedUnderDrop[$occArr["filedUnder"]] : null;
+									}
+									?>	
+									<input type="text" size="50" name="filedUnder" id="fffileunder" value="<?php echo array_key_exists('filedUnder',$occArr)?$occArr['filedUnder']:''; ?>" onchange="fieldChanged('filedUnder');" <?php if($isEditor > 2) echo 'disabled'; ?>/>
 								</span>
 							</div>
 							<div class="field-block">
-								<span class="field-label"><?php echo (defined('IDENTIFIEDBYLABEL')?IDENTIFIEDBYLABEL:'Identified By'); ?></span>
+								<span class="field-label"><?php echo (isset($LANG['CURR_NAME']) ? $LANG['CURR_NAME'] : 'Current Name'); ?></span>
 								<span class="field-elem">
-									<input size = '50' type="text"  maxlength="255" name="identifiedby" id="ffidentifiedby" value="<?php echo array_key_exists('identifiedby',$occArr)?$occArr['identifiedby']:''; ?>" onchange="fieldChanged('identifiedby');" />
+									<input type="text" size = '50' name="currName" id="ffcurrname" value="<?php echo $occArr["currName"]; ?>" onchange="fieldChanged('currName');" />
+								</span>
+							</div>
+							<?php if(!isset($_POST['toggle-button']) || (isset($_POST['toggle-button']) && $_POST['toggle-button'] != 'Minimal')): ?>
+								<div class="field-block">
+									<span class="field-label"><?php echo (isset($LANG['IDQUALIFIER']) ? $LANG['IDQUALIFIER'] : 'ID Qualifier'); ?></span>
+									<span class="field-elem">
+										<select name="idQualifier" onchange="fieldChanged('idQualifier');">
+											<option value=""><?php echo $LANG['IDQUALIFIER']; ?>Select Your ID Qualifier</option>
+											<option value="">---------------------------------------</option>
+											<?php
+											$idqArr = array('s. str.', '?', 'not', 'cf.', 's. lat.', 'aff.');
+											foreach ($idqArr as $k) {
+												$selected = ($k == $occArr['idQualifier']) ? 'selected' : '';
+												echo '<option value="' . $k . '" ' . $selected . '>' . $k . '</option>' . "\n";
+											}
+											?>
+										</select>
+									</span>
+								</div>
+								<div class="field-block">
+									<span class="field-label"><?php echo (defined('IDENTIFIEDBYLABEL')?IDENTIFIEDBYLABEL:'Identified By'); ?></span>
+									<span class="field-elem">
+										<input size = '50' type="text"  maxlength="255" name="identifiedby" id="ffidentifiedby" value="<?php echo array_key_exists('identifiedby',$occArr)?$occArr['identifiedby']:''; ?>" onchange="fieldChanged('identifiedby');" />
+									</span>
+								</div>
+								<div class="field-block">
+									<span class="field-label"><?php echo (defined('DATEIDENTIFIEDLABEL')?DATEIDENTIFIEDLABEL:'Date Identified'); ?></span>
+									<span class="field-elem">
+										<input size = '50' type="text" name="dateidentified" maxlength="45" value="<?php echo array_key_exists('dateidentified',$occArr)?$occArr['dateidentified']:''; ?>" onchange="fieldChanged('dateidentified');" />
+									</span>
+								</div>
+								<!-- There is a tab below is for determiation -->
+								<div class="field-block">
+									<span class="field-label"><?php echo (isset($LANG['DET_TEXT']) ? $LANG['DET_TEXT'] : 'Det. Text'); ?></span>
+									<span class="field-elem">
+										<input size = '50' type="text" name="detText" value="<?php echo $occArr["detText"]; ?>" onchange="fieldChanged('detText');" />
+									</span>
+								</div>
+								<div class="field-block">
+									<span class="field-label"><?php echo (isset($LANG['PROVENANCE']) ? $LANG['PROVENANCE'] : 'Provenance'); ?></span>
+									<span class="field-elem">
+										<input type="text" size = '50' name="provenance" value="<?php echo $occArr["provenance"]; ?>" onchange="fieldChanged('provenance');" />
+									</span>
+								</div>
+							<?php endif; ?>
+							<div class="field-block">
+								<span class="field-label"><?php echo (defined('RECORDEDBYLABEL')?RECORDEDBYLABEL:'Collectors'); ?></span>
+								<span class="field-elem">
+									<input size = '50' type="text" name="recordedby" id="ffrecordedby" maxlength="255" value="<?php echo array_key_exists('recordedby',$occArr)?$occArr['recordedby']:''; ?>" onchange="fieldChanged('recordedby');" />
+								</span>
+							</div>
+							<!-- I put associated collectors here -->
+							<div class="field-block">
+								<span class="field-label"><?php echo (defined('ASSOCIATEDCOLLECTORSLABEL')?ASSOCIATEDCOLLECTORSLABEL:'Et al.'); ?></span>
+								<span class="field-elem">
+									<input size = '50' type="text" name="associatedcollectors" maxlength="255" value="<?php echo array_key_exists('associatedcollectors',$occArr)?$occArr['associatedcollectors']:''; ?>" onchange="fieldChanged('associatedcollectors');" />
 								</span>
 							</div>
 							<div class="field-block">
-								<span class="field-label"><?php echo (defined('DATEIDENTIFIEDLABEL')?DATEIDENTIFIEDLABEL:'Date Identified'); ?></span>
+								<span class="field-label"><?php echo (defined('RECORDNUMBERLABEL')?RECORDNUMBERLABEL:'Collector Number'); ?></span>
 								<span class="field-elem">
-									<input size = '50' type="text" name="dateidentified" maxlength="45" value="<?php echo array_key_exists('dateidentified',$occArr)?$occArr['dateidentified']:''; ?>" onchange="fieldChanged('dateidentified');" />
+									<input size = '50' type="text" name="recordnumber" maxlength="45" value="<?php echo array_key_exists('recordnumber',$occArr)?$occArr['recordnumber']:''; ?>" onchange="recordNumberChanged(this);" />
 								</span>
-							</div>
-							<!-- There is a tab below is for determiation -->
+							</div> 
 							<div class="field-block">
-								<span class="field-label"><?php echo (isset($LANG['DET_TEXT']) ? $LANG['DET_TEXT'] : 'Det. Text'); ?></span>
+								<span class="field-label"><?php echo (defined('EVENTDATELABEL')?EVENTDATELABEL:'Date Collected'); ?></span>
 								<span class="field-elem">
-									<input size = '50' type="text" name="detText" value="<?php echo $occArr["detText"]; ?>" onchange="fieldChanged('detText');" />
-								</span>
-							</div>
-							<div class="field-block">
-								<span class="field-label"><?php echo (isset($LANG['PROVENANCE']) ? $LANG['PROVENANCE'] : 'Provenance'); ?></span>
-								<span class="field-elem">
-									<input type="text" size = '50' name="provenance" value="<?php echo $occArr["provenance"]; ?>" onchange="fieldChanged('provenance');" />
-								</span>
-							</div>
-						<?php endif; ?>
-						<div class="field-block">
-							<span class="field-label"><?php echo (defined('RECORDEDBYLABEL')?RECORDEDBYLABEL:'Collectors'); ?></span>
-							<span class="field-elem">
-								<input size = '50' type="text" name="recordedby" id="ffrecordedby" maxlength="255" value="<?php echo array_key_exists('recordedby',$occArr)?$occArr['recordedby']:''; ?>" onchange="fieldChanged('recordedby');" />
-							</span>
-						</div>
-						<!-- I put associated collectors here -->
-						<div class="field-block">
-							<span class="field-label"><?php echo (defined('ASSOCIATEDCOLLECTORSLABEL')?ASSOCIATEDCOLLECTORSLABEL:'Et al.'); ?></span>
-							<span class="field-elem">
-								<input size = '50' type="text" name="associatedcollectors" maxlength="255" value="<?php echo array_key_exists('associatedcollectors',$occArr)?$occArr['associatedcollectors']:''; ?>" onchange="fieldChanged('associatedcollectors');" />
-							</span>
-						</div>
-						<div class="field-block">
-							<span class="field-label"><?php echo (defined('RECORDNUMBERLABEL')?RECORDNUMBERLABEL:'Collector Number'); ?></span>
-							<span class="field-elem">
-								<input size = '50' type="text" name="recordnumber" maxlength="45" value="<?php echo array_key_exists('recordnumber',$occArr)?$occArr['recordnumber']:''; ?>" onchange="recordNumberChanged(this);" />
-							</span>
-						</div> 
-						<div class="field-block">
-							<span class="field-label"><?php echo (defined('EVENTDATELABEL')?EVENTDATELABEL:'Date Collected'); ?></span>
-							<span class="field-elem">
-								<input size = '50' type="text" name="eventdate" value="<?php echo array_key_exists('eventdate',$occArr)?$occArr['eventdate']:''; ?>" onchange="eventDateChanged(this);" />
-							</span>
-						</div>
-						<div class="field-block">
-							<span class="field-label"><?php echo (defined('VERBATIMEVENTDATELABEL')?VERBATIMEVENTDATELABEL:'Verbatim Date'); ?></span>
-							<span class="field-elem">
-								<input size = '50' type="text" name="verbatimeventdate" maxlength="255" value="<?php echo array_key_exists('verbatimeventdate',$occArr)?$occArr['verbatimeventdate']:''; ?>" onchange="verbatimEventDateChanged(this)" />
-							</span>
-						</div>
-						<?php if(!isset($_POST['toggle-button']) || (isset($_POST['toggle-button']) && $_POST['toggle-button'] != 'Minimal')): ?>
-							<div class="field-block">
-								<span class="field-label"><?php echo (isset($LANG['CONTAINER']) ? $LANG['CONTAINER'] : 'Container'); ?></span>
-								<span class="field-elem">
-									<input size = '50' type="text" name="container" value="<?php echo $occArr["container"]; ?>" onchange="fieldChanged('container');" />
+									<input size = '50' type="text" name="eventdate" value="<?php echo array_key_exists('eventdate',$occArr)?$occArr['eventdate']:''; ?>" onchange="eventDateChanged(this);" />
 								</span>
 							</div>
 							<div class="field-block">
-								<span class="field-label"><?php echo (isset($LANG['COLL_TRIP']) ? $LANG['COLL_TRIP'] : 'Collecting Trip'); ?></span>
+								<span class="field-label"><?php echo (defined('VERBATIMEVENTDATELABEL')?VERBATIMEVENTDATELABEL:'Verbatim Date'); ?></span>
 								<span class="field-elem">
-									<input size = '50' type="text" name="collTrip" id="ffcolltrip" value="<?php echo $occArr["collTrip"]; ?>" onchange="fieldChanged('collTrip');" />
+									<input size = '50' type="text" name="verbatimeventdate" maxlength="255" value="<?php echo array_key_exists('verbatimeventdate',$occArr)?$occArr['verbatimeventdate']:''; ?>" onchange="verbatimEventDateChanged(this)" />
 								</span>
 							</div>
-						<?php endif; ?>
-						<div class="field-block">
-							<span class="field-label"><?php echo (isset($LANG['GEO_WITHIN']) ? $LANG['GEO_WITHIN'] : 'Geography Within'); ?></span>
-							<span class="field-elem">
-								<input size = '50' type="text" name="geoWithin" id="ffgeowithin" value="<?php echo $occArr["geoWithin"]; ?>" onchange="fieldChanged('geoWithin');" />
-							</span>
-						</div>
-						<div class="field-block">
-							<span class="field-label"><?php echo (isset($LANG['HIGH_GEO']) ? $LANG['HIGH_GEO'] : 'Higher Geography'); ?></span>
-							<span class="field-elem">
-								<input type="text" size = '50' name="highGeo" id="ffhighgeo" value="<?php echo $occArr["highGeo"]; ?>" onchange="fieldChanged('highGeo');" />
-							</span>
-						</div>
-						<?php if(!isset($_POST['toggle-button']) || (isset($_POST['toggle-button']) && $_POST['toggle-button'] != 'Minimal')): ?>
+							<?php if(!isset($_POST['toggle-button']) || (isset($_POST['toggle-button']) && $_POST['toggle-button'] != 'Minimal')): ?>
+								<div class="field-block">
+									<span class="field-label"><?php echo (isset($LANG['CONTAINER']) ? $LANG['CONTAINER'] : 'Container'); ?></span>
+									<span class="field-elem">
+										<input size = '50' type="text" name="container" value="<?php echo $occArr["container"]; ?>" onchange="fieldChanged('container');" />
+									</span>
+								</div>
+								<div class="field-block">
+									<span class="field-label"><?php echo (isset($LANG['COLL_TRIP']) ? $LANG['COLL_TRIP'] : 'Collecting Trip'); ?></span>
+									<span class="field-elem">
+										<input size = '50' type="text" name="collTrip" id="ffcolltrip" value="<?php echo $occArr["collTrip"]; ?>" onchange="fieldChanged('collTrip');" />
+									</span>
+								</div>
+							<?php endif; ?>
 							<div class="field-block">
-								<span class="field-label"><?php echo (defined('LOCALITYLABEL')?LOCALITYLABEL:'Verbatim Locality'); ?></span>
+								<span class="field-label"><?php echo (isset($LANG['GEO_WITHIN']) ? $LANG['GEO_WITHIN'] : 'Geography Within'); ?></span>
 								<span class="field-elem">
-									<input id="fflocality" type="text" size = '50'  onchange="fieldChanged('locality');" name="locality" value="<?php echo array_key_exists('locality',$occArr)?$occArr['locality']:''; ?>" />
-								</span>
-							</div>
-							<div class="field-block">
-								<span class="field-label"><?php echo (defined('HABITATLABEL')?HABITATLABEL:'Habitat'); ?></span>
-								<span class="field-elem">
-									<input size = '50' type="text" name="habitat" value="<?php echo array_key_exists('habitat',$occArr)?$occArr['habitat']:''; ?>" onchange="fieldChanged('habitat');" />
+									<input size = '50' type="text" name="geoWithin" id="ffgeowithin" value="<?php echo $occArr["geoWithin"]; ?>" onchange="fieldChanged('geoWithin');" />
 								</span>
 							</div>
 							<div class="field-block">
-								<span class="field-label"><?php echo (isset($LANG['FREQUENCY']) ? $LANG['FREQUENCY'] : 'Frequency'); ?></span>
+								<span class="field-label"><?php echo (isset($LANG['HIGH_GEO']) ? $LANG['HIGH_GEO'] : 'Higher Geography'); ?></span>
 								<span class="field-elem">
-									<input size = '50' type="text" name="frequency" value="<?php echo $occArr["frequency"]; ?>" onchange="fieldChanged('frequency');" />
+									<input type="text" size = '50' name="highGeo" id="ffhighgeo" value="<?php echo $occArr["highGeo"]; ?>" onchange="fieldChanged('highGeo');" />
 								</span>
 							</div>
+							<?php if(!isset($_POST['toggle-button']) || (isset($_POST['toggle-button']) && $_POST['toggle-button'] != 'Minimal')): ?>
+								<div class="field-block">
+									<span class="field-label"><?php echo (defined('LOCALITYLABEL')?LOCALITYLABEL:'Verbatim Locality'); ?></span>
+									<span class="field-elem">
+										<input id="fflocality" type="text" size = '50'  onchange="fieldChanged('locality');" name="locality" value="<?php echo array_key_exists('locality',$occArr)?$occArr['locality']:''; ?>" />
+									</span>
+								</div>
+								<div class="field-block">
+									<span class="field-label"><?php echo (defined('HABITATLABEL')?HABITATLABEL:'Habitat'); ?></span>
+									<span class="field-elem">
+										<input size = '50' type="text" name="habitat" value="<?php echo array_key_exists('habitat',$occArr)?$occArr['habitat']:''; ?>" onchange="fieldChanged('habitat');" />
+									</span>
+								</div>
+								<div class="field-block">
+									<span class="field-label"><?php echo (isset($LANG['FREQUENCY']) ? $LANG['FREQUENCY'] : 'Frequency'); ?></span>
+									<span class="field-elem">
+										<input size = '50' type="text" name="frequency" value="<?php echo $occArr["frequency"]; ?>" onchange="fieldChanged('frequency');" />
+									</span>
+								</div>
+								<div class="field-block">
+									<span class="field-label"><?php echo (defined('VERBATIMATTRIBUTESLABEL')?VERBATIMATTRIBUTESLABEL:'Description'); ?></span>
+									<span class="field-elem">
+										<input size = '50' type="text" name="verbatimattributes" value="<?php echo array_key_exists('verbatimattributes',$occArr)?$occArr['verbatimattributes']:''; ?>" onchange="fieldChanged('verbatimattributes');" />
+									</span>
+								</div>
+								<div class="field-block">
+									<span class="field-label"><?php echo (defined('OCCURRENCEREMARKSLABEL')?OCCURRENCEREMARKSLABEL:'Remarks'); ?></span>
+									<span class="field-elem">
+										<input size = '50' type="text" name="occurrenceremarks" value="<?php echo array_key_exists('occurrenceremarks',$occArr)?$occArr['occurrenceremarks']:''; ?>" onchange="fieldChanged('occurrenceremarks');" title="<?php echo $LANG['OCC_REMARKS']; ?>" />
+									</span>
+								</div>
+							<?php endif; ?>
+							<!-- I use the label project here from the old form, not sure if it's the same thing -->
 							<div class="field-block">
-								<span class="field-label"><?php echo (defined('VERBATIMATTRIBUTESLABEL')?VERBATIMATTRIBUTESLABEL:'Description'); ?></span>
+								<span class="field-label"><?php echo (defined('LABELPROJECTLABEL')?LABELPROJECTLABEL:'Project'); ?></span>
 								<span class="field-elem">
-									<input size = '50' type="text" name="verbatimattributes" value="<?php echo array_key_exists('verbatimattributes',$occArr)?$occArr['verbatimattributes']:''; ?>" onchange="fieldChanged('verbatimattributes');" />
+									<input size = '50' type="text" name="labelproject" maxlength="45" value="<?php echo array_key_exists('labelproject',$occArr)?$occArr['labelproject']:''; ?>" onchange="fieldChanged('labelproject');" />
 								</span>
 							</div>
-							<div class="field-block">
-								<span class="field-label"><?php echo (defined('OCCURRENCEREMARKSLABEL')?OCCURRENCEREMARKSLABEL:'Remarks'); ?></span>
-								<span class="field-elem">
-									<input size = '50' type="text" name="occurrenceremarks" value="<?php echo array_key_exists('occurrenceremarks',$occArr)?$occArr['occurrenceremarks']:''; ?>" onchange="fieldChanged('occurrenceremarks');" title="<?php echo $LANG['OCC_REMARKS']; ?>" />
-								</span>
-							</div>
-						<?php endif; ?>
-						<!-- I use the label project here from the old form, not sure if it's the same thing -->
-						<div class="field-block">
-							<span class="field-label"><?php echo (defined('LABELPROJECTLABEL')?LABELPROJECTLABEL:'Project'); ?></span>
-							<span class="field-elem">
-								<input size = '50' type="text" name="labelproject" maxlength="45" value="<?php echo array_key_exists('labelproject',$occArr)?$occArr['labelproject']:''; ?>" onchange="fieldChanged('labelproject');" />
-							</span>
 						</div>
 					</div>  <!-- column left ends -->
 					<!-- image part -->
 					<!-- TODO: implement image code from old form, see collections/editor/includes/imagetab.php and check the embedded code to get started -->
-					<div class = "column right" style = "border: 1; background-color:#F2F2F3;">
+					<div class = "column right">
 						<div class="field-block title">
-							<h2>Image</h2>
+							<h3>Image</h3>
 						</div>
-						<div class="login-info" style = "backgroufnd-color:#86C5D8; text-align: center; height: 450px;">
+						<div style = "backgroufnd-color:#86C5D8; text-align: center; height: 450px;">
 							<?php
 								include_once($SERVER_ROOT.'/collections/editor/includes/quickentryimgprocessor.php');
 							?>
@@ -951,9 +956,7 @@ else{
 									<input size = '25' type="text" name="format" value="<?php echo $occArr["format"]; ?>" onchange="fieldChanged('format');" />
 								</span>
 							</div>
-						</div>
-						<?php if(!isset($_POST['toggle-button']) || (isset($_POST['toggle-button']) && $_POST['toggle-button'] != 'Minimal')): ?>
-							<div class="login-info">
+							<?php if(!isset($_POST['toggle-button']) || (isset($_POST['toggle-button']) && $_POST['toggle-button'] != 'Minimal')): ?>
 								<div class="field-block">
 									<span class="field-label"><?php echo (defined('VERBATIMELEVATIONLABEL')?VERBATIMELEVATIONLABEL:'Verb. Elev.'); ?></span>
 									<span class="field-elem">
@@ -1010,11 +1013,10 @@ else{
 										<input size = '25' type="text" name="coordinateuncertaintyinmeters" maxlength="10" value="<?php echo array_key_exists('coordinateuncertaintyinmeters',$occArr)?$occArr['coordinateuncertaintyinmeters']:''; ?>" onchange="coordinateUncertaintyInMetersChanged(this.form);" title="<?php echo (isset($LANG['UNCERTAINTY_METERS'])?$LANG['UNCERTAINTY_METERS']:'Uncertainty in Meters'); ?>" />
 									</span>
 								</div>
-							</div>
-						<?php endif; ?>
-					</div>  <!-- image ends -->
-					<table class = "column left" style = "border:1px solid black;">									
-						<!-- TODO: implement button functionality, examine relevant button divs in old code below ie saveedits button to get started -->
+							<?php endif; ?>
+						</div>
+					</div>  
+					<table class = "column left" style = "margin-top: -80px;">									
 						<tr>
 							<td>
 								<div id="bottomSubmitDiv">

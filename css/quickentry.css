@@ -4,10 +4,9 @@
     font-size: 12px;
 }
 h2{
-    background: linear-gradient(1000deg, rgb(218, 200, 255), #34ace0);;
-    color: white;
-    margin-top: -5px;
-    font-size: 20px;
+    color: var(--darkest-color);
+    font-weight: 700;
+    font-family: var(--heading-font-family);
 }
 #titleDiv {
     font-size: 20px;
@@ -91,7 +90,6 @@ button{
     width: 120px;
 }
 .title{
-    backgroufnd-color:#86C5D8; 
     display: block;
     width: 100%;
 }
