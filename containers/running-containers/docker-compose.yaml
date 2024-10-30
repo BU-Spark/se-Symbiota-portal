@@ -11,7 +11,7 @@ services:
       - /home/herbaria/running-symbiota:/var/www/html/symbiota
     depends_on:
       - symbiota-db
-      - flask-app
+      - ocr-server
 
   symbiota-db:
     build:
