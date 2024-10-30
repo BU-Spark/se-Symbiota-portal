@@ -33,7 +33,7 @@ services:
       context: ./flaskContainer
       dockerfile: Dockerfile
     ports:
-      - "5000:5000"
+      - "8050:8050"
     volumes:
       - /home/herbaria/running-containers/sample-ocr:/data
 

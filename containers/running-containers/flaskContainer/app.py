@@ -25,4 +25,4 @@ def output(id):
     return jsonify(data)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(port=8050, debug=True)
