@@ -923,58 +923,44 @@ else{
 									<input size = '50' type="text" name="labelproject" maxlength="45" value="<?php echo array_key_exists('labelproject',$occArr)?$occArr['labelproject']:''; ?>" onchange="fieldChanged('labelproject');" />
 								</span>
 							</div>
-						</div>
-					</div>  <!-- column left ends -->
-					<!-- image part -->
-					<!-- TODO: implement image code from old form, see collections/editor/includes/imagetab.php and check the embedded code to get started -->
-					<div class = "column right">
-						<div class="field-block title">
-							<h3>Image</h3>
-						</div>
-						<div style = "backgroufnd-color:#86C5D8; text-align: center; height: 450px;">
-							<?php
-								include_once($SERVER_ROOT.'/collections/editor/includes/quickentryimgprocessor.php');
-							?>
-						</div>
-						<div class="login-info">
 							<div class="field-block">
 								<span class="field-label"><?php echo (isset($LANG['RECCORECTED']) ? $LANG['RECCORECTED'] : 'Record Created'); ?>:</span>
 								<span class="field-elem">
-									<input readonly size='25' type='hidden' type='text' name='modified' id='modifiedInput' value="<?php echo $occArr['modified']; ?>" />
+									<input readonly size = '50' type='hidden' type='text' name='modified' id='modifiedInput' value="<?php echo $occArr['modified']; ?>" />
 									<span id="displayModified"></span>
 								</span>
 							</div>
 							<div class="field-block">
 								<span class="field-label"><?php echo (isset($LANG['PREPMETHOD']) ? $LANG['PREPMETHOD'] : 'Prep Method'); ?></span>
 								<span class="field-elem">
-									<input size = '25' type="text" name="prepMethod" value="<?php echo $occArr["prepMethod"]; ?>" onchange="fieldChanged('prepMethod');"  />
+									<input size = '50' type="text" name="prepMethod" value="<?php echo $occArr["prepMethod"]; ?>" onchange="fieldChanged('prepMethod');"  />
 								</span>
 							</div>
 							<div class="field-block">
 								<span class="field-label"><?php echo (isset($LANG['FORMAT']) ? $LANG['FORMAT'] : 'Format'); ?></span>
 								<span class="field-elem">
-									<input size = '25' type="text" name="format" value="<?php echo $occArr["format"]; ?>" onchange="fieldChanged('format');" />
+									<input size = '50' type="text" name="format" value="<?php echo $occArr["format"]; ?>" onchange="fieldChanged('format');" />
 								</span>
 							</div>
 							<?php if(!isset($_POST['toggle-button']) || (isset($_POST['toggle-button']) && $_POST['toggle-button'] != 'Minimal')): ?>
 								<div class="field-block">
 									<span class="field-label"><?php echo (defined('VERBATIMELEVATIONLABEL')?VERBATIMELEVATIONLABEL:'Verb. Elev.'); ?></span>
 									<span class="field-elem">
-										<input size = '25' type="text" name="verbatimelevation" maxlength="255" value="<?php echo array_key_exists('verbatimelevation',$occArr)?$occArr['verbatimelevation']:''; ?>" onchange="verbatimElevationChanged(this.form);" />
+										<input size = '50' type="text" name="verbatimelevation" maxlength="255" value="<?php echo array_key_exists('verbatimelevation',$occArr)?$occArr['verbatimelevation']:''; ?>" onchange="verbatimElevationChanged(this.form);" />
 									</span>
 								</div>
 								<div class="field-block">
 									<span class="field-label"><?php echo (isset($LANG['VERBLAT']) ? $LANG['VERBLAT'] : 'Verb. Lat.'); ?></span>
 									<span class="field-elem">
 										<!-- TODO: need to update the onchange function later to make sure the input format is correct -->
-										<input size = '25' type="text" name="verbLat" value="<?php echo $occArr["verbLat"]; ?>" onchange="decimalLatitudeChanged(this.form)" />
+										<input size = '50' type="text" name="verbLat" value="<?php echo $occArr["verbLat"]; ?>" onchange="decimalLatitudeChanged(this.form)" />
 									</span>
 								</div>
 								<div class="field-block">
 									<span class="field-label"><?php echo (isset($LANG['VERBLONG']) ? $LANG['VERBLONG'] : 'Verb. Long.'); ?></span>
 									<span class="field-elem">
 										<!-- TODO: need to update the onchange function later to make sure the input format is correct -->
-										<input size = '25' type="text" name="verbLong" value="<?php echo $occArr["verbLong"]; ?>" onchange="decimalLatitudeChanged(this.form)" />
+										<input size = '50' type="text" name="verbLong" value="<?php echo $occArr["verbLong"]; ?>" onchange="decimalLatitudeChanged(this.form)" />
 									</span>
 								</div>
 								<div class="field-block">
@@ -986,7 +972,7 @@ else{
 											$latValue = $occArr["decimallatitude"];
 										}
 										?>
-										<input size = '25' type="text" name="decimallatitude" maxlength="15" value="<?php echo $latValue; ?>" onchange="decimalLatitudeChanged(this.form)" />
+										<input size = '50' type="text" name="decimallatitude" maxlength="15" value="<?php echo $latValue; ?>" onchange="decimalLatitudeChanged(this.form)" />
 									</span>
 								</div>
 								<div class="field-block">
@@ -998,23 +984,56 @@ else{
 											$longValue = $occArr["decimallongitude"];
 										}
 										?>
-										<input size = '25' type="text" name="decimallongitude" maxlength="15" value="<?php echo $longValue; ?>" onchange="decimalLongitudeChanged(this.form);" />
+										<input size = '50' type="text" name="decimallongitude" maxlength="15" value="<?php echo $longValue; ?>" onchange="decimalLongitudeChanged(this.form);" />
 									</span>
 								</div>
 								<div class="field-block">
 									<span class="field-label"><?php echo (isset($LANG['METHOD']) ? $LANG['METHOD'] : 'Method'); ?></span>
 									<span class="field-elem">
-										<input size = '25' type="text" name="method" value="<?php echo $occArr["method"]; ?>" onchange="fieldChanged('method');" />
+										<input size = '50' type="text" name="method" value="<?php echo $occArr["method"]; ?>" onchange="fieldChanged('method');" />
 									</span>
 								</div>
 								<div class="field-block">
 									<span class="field-label"><?php echo (defined('COORDINATEUNCERTAINITYINMETERSLABEL')?COORDINATEUNCERTAINITYINMETERSLABEL:'Uncertainty'); ?></span>
 									<span class="field-elem">
-										<input size = '25' type="text" name="coordinateuncertaintyinmeters" maxlength="10" value="<?php echo array_key_exists('coordinateuncertaintyinmeters',$occArr)?$occArr['coordinateuncertaintyinmeters']:''; ?>" onchange="coordinateUncertaintyInMetersChanged(this.form);" title="<?php echo (isset($LANG['UNCERTAINTY_METERS'])?$LANG['UNCERTAINTY_METERS']:'Uncertainty in Meters'); ?>" />
+										<input size = '50' type="text" name="coordinateuncertaintyinmeters" maxlength="10" value="<?php echo array_key_exists('coordinateuncertaintyinmeters',$occArr)?$occArr['coordinateuncertaintyinmeters']:''; ?>" onchange="coordinateUncertaintyInMetersChanged(this.form);" title="<?php echo (isset($LANG['UNCERTAINTY_METERS'])?$LANG['UNCERTAINTY_METERS']:'Uncertainty in Meters'); ?>" />
 									</span>
 								</div>
 							<?php endif; ?>
 						</div>
+						<section>
+							<div class="info function-bar">
+								<div style="float:left;" title="<?php echo $LANG['PRIMARY_KEY']; ?>">
+									<?php if($occId) echo 'Key: '.$occManager->getOccId(); ?>
+								</div>
+							</div>
+							<div class="info function-bar">
+								<?php
+									echo $LANG['ENTERED_BY'].': '.($occArr['recordenteredby']?$occArr['recordenteredby']:$LANG['NOT_RECORDED']);
+									if(isset($occArr['dateentered']) && $occArr['dateentered']) echo ' ['.$occArr['dateentered'].']';
+								?>
+							</div>
+							<div class="info">
+								<span id="lastModified">
+									Last Modified: <?php echo $occArr["dateLastModified"]; ?>
+								</span>
+							</div>
+						</section> 
+					</div>  
+					<!-- column left ends -->
+
+					<!-- image part -->
+					<!-- TODO: implement image code from old form, see collections/editor/includes/imagetab.php and check the embedded code to get started -->
+					<div class = "column right">
+						<div class="field-block title">
+							<h3>Image</h3>
+						</div>
+						<div style = "backgroufnd-color:#86C5D8; text-align: center; height: 450px;">
+							<?php
+								include_once($SERVER_ROOT.'/collections/editor/includes/quickentryimgprocessor.php');
+							?>
+						</div>
+
 					</div>  
 					<table class = "column left" style = "margin-top: -80px;">									
 						<tr>
@@ -1078,24 +1097,7 @@ else{
 						</tr>
 					</table>
 				</form>
-				<section>
-					<div class="info function-bar">
-						<div style="float:left;" title="<?php echo $LANG['PRIMARY_KEY']; ?>">
-							<?php if($occId) echo 'Key: '.$occManager->getOccId(); ?>
-						</div>
-					</div>
-					<div class="info function-bar">
-						<?php
-							echo $LANG['ENTERED_BY'].': '.($occArr['recordenteredby']?$occArr['recordenteredby']:$LANG['NOT_RECORDED']);
-							if(isset($occArr['dateentered']) && $occArr['dateentered']) echo ' ['.$occArr['dateentered'].']';
-						?>
-					</div>
-					<div class="info">
-						<span id="lastModified">
-							Last Modified: <?php echo $occArr["dateLastModified"]; ?>
-						</span>
-					</div>
-				</section> 
+				
 			</div>
 		</div>			
 	</div>

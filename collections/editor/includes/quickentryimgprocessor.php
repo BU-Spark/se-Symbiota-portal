@@ -89,7 +89,8 @@ else include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/imgpro
 	}
 </script>
 <style>
-
+	.ocr-box{ padding: 5px; float:left; }
+	.ocr-box button{ margin: 5px; }
 </style>
 <div id="labelProcDiv" style="width:100%;height:425px;position:relative;">
 	<fieldset id="labelProcFieldset" style="background-color:#F2F2F3;">
@@ -105,21 +106,165 @@ else include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/imgpro
 			<div style="float:left;;padding-right:10px;margin:2px 20px 0px 0px;"><?php echo $LANG['ROTATE']; ?>: <a href="#" onclick="rotateImage(-90)">&nbsp;L&nbsp;</a> &lt;&gt; <a href="#" onclick="rotateImage(90)">&nbsp;R&nbsp;</a></div>
 		</div>
 		<div id="labelprocessingdiv" style="clear:both;">
-				<?php $currentImageId = 0; ?>
-				<div id="labeldiv-<?php echo $currentImageId; ?>">
-					<div>
-						<img id="activeimg-<?php echo $currentImageId; ?>" src="<?php echo($imgUrlCollection[$currentImageId]) ?>" style="height:400px;" onload="initImageTool('activeimg-<?php echo $currentImageId; ?>')" />
-					</div>
-					<div style="width:100%; clear:both;">
-						<div style="float:right; margin-right:20px; font-weight:bold;">
-							<span id="current-image-index" style="display:none;"><?php echo $currentImageId; ?></span>
-							<span id="image-count">Image <?php echo ($currentImageId + 1); ?> of <?php echo count($imgUrlCollection); ?></span>
-							<?php if(count($imgUrlCollection) > 1): ?>
-								<a href="#" onclick="return nextProcessingImage();">>&gt;</a>
-							<?php endif; ?>
-						</div>
+			<?php $currentImageId = 0; ?>
+			<div id="labeldiv-<?php echo $currentImageId; ?>">
+				<div>
+					<img id="activeimg-<?php echo $currentImageId; ?>" src="<?php echo($imgUrlCollection[$currentImageId]) ?>" style="height:400px;" onload="initImageTool('activeimg-<?php echo $currentImageId; ?>')" />
+				</div>
+				<div style="width:100%; clear:both;">
+					<div style="float:right; margin-right:20px; font-weight:bold;">
+						<span id="current-image-index" style="display:none;"><?php echo $currentImageId; ?></span>
+						<span id="image-count">Image <?php echo ($currentImageId + 1); ?> of <?php echo count($imgUrlCollection); ?></span>
+						<?php if(count($imgUrlCollection) > 1): ?>
+							<a href="#" onclick="return nextProcessingImage();">>&gt;</a>
+						<?php endif; ?>
 					</div>
 				</div>
+				<div style="width:100%;clear:both;">
+					<h4 style="text-align:left;">
+						Tesseract OCR
+					</h4>
+					<fieldset class="ocr-box" style="text-align:left; margin-bottom:15px">
+						<input type="checkbox" id="ocrfull-tess" value="1"/> <?php echo $LANG['OCR_WHOLE_IMG']; ?><br/>
+						<input type="checkbox" id="ocrbest" value="1" /> <?php echo $LANG['OCR_ANALYSIS']; ?>
+						<div>
+							<button 
+								value="OCR Image" 
+								onclick="quickEntryOcrImage(this, 'tess', <?php echo json_encode($imgId); ?>, <?php echo json_encode($currentImageId); ?>);">
+								<?php echo $LANG['OCR_IMAGE']; ?>
+							</button>
+							<!-- <button value="OCR Image" onclick="quickEntryOcrImage(this,'tess', <?php // echo $imgId.','.$currentImageId; ?>);" ><?php // echo $LANG['OCR_IMAGE']; ?></button> -->
+							<img id="workingcircle-tess-<?php echo $currentImageId; ?>" src="../../images/workingcircle.gif" style="display:none;" />
+						</div>
+					</fieldset>
+					<?php
+					if(!empty($DIGILEAP_OCR_ACTIVATED)){
+						?>
+						<fieldset class="ocr-box">
+							<legend>DigiLeap OCR</legend>
+							<input type="checkbox" id="ocrfull-digi" value="1" /> <?php echo $LANG['OCR_WHOLE_IMG']; ?><br/>
+							<div>
+								<button 
+									value="OCR Image" 
+									onclick="quickEntryOcrImage(this, 'tess', <?php echo json_encode($imgId); ?>, <?php echo json_encode($currentImageId); ?>);">
+									<?php echo $LANG['OCR_IMAGE']; ?>
+								</button>
+								<img id="workingcircle-digi-<?php echo $currentImageId; ?>" src="../../images/workingcircle.gif" style="display:none;" />
+							</div>
+						</fieldset>
+						<?php
+					}
+					?>
+				</div>
+				<div style="width:100%;clear:both;">
+					<div id="tfadddiv-<?php echo $currentImageId; ?>" style="display:none;>
+						<form id="ocraddform-<?php echo $currentImageId; ?>" name="ocraddform-<?php echo $imgId; ?>" method="post" action="occurrencequickentry.php">
+							<div>
+								<textarea name="rawtext" rows="12" cols="48" style="width:97%;background-color:#F8F8F8;"></textarea>
+							</div>
+							<div title="OCR Notes" style="text-align:left; margin-top:10px">
+								<b><?php echo $LANG['NOTES']; ?>:</b>
+								<input name="rawnotes" type="text" value="" style="width:97%;" />
+							</div>
+							<div title="OCR Source" style="text-align:left;">
+								<b><?php echo $LANG['SOURCE']; ?>:</b>
+								<input name="rawsource" type="text" value="" style="width:97%;" />
+							</div>
+							<div style="float:left">
+								<input type="hidden" name="imgid" value="<?php echo $imgId; ?>" />
+								<input type="hidden" name="occid" value="<?php echo $occId; ?>" />
+								<input type="hidden" name="collid" value="<?php echo $collId; ?>" />
+								<input type="hidden" name="occindex" value="<?php echo $occIndex; ?>" />
+								<input type="hidden" name="csmode" value="<?php echo $crowdSourceMode; ?>" />
+								<button name="submitaction" type="submit" value="Save OCR" style="margin-top:10px;"><?php echo $LANG['SAVE_OCR']; ?></button>
+							</div>
+						</form>
+						<div style="font-weight:bold;float:right;"><?php echo '&lt;'.$LANG['NEW'].'&gt; '.$LANG['OF'].' '.count($fArr); ?>
+						</div>
+					</div>
+					<div id="tfeditdiv-<?php echo $currentImageId; ?>" style="clear:both;">
+						<?php
+						if(array_key_exists($imgId,$fragArr)){
+							$fragCnt = 1;
+							$targetPrlid = '';
+							if(isset($newPrlid) && $newPrlid) $targetPrlid = $newPrlid;
+							if(array_key_exists('editprlid',$_REQUEST)) $targetPrlid = $_REQUEST['editprlid'];
+							foreach($fArr as $prlid => $rArr){
+								$displayBlock = 'none';
+								if($targetPrlid){
+									if($prlid == $targetPrlid){
+										$displayBlock = 'block';
+									}
+								}
+								elseif($fragCnt==1){
+									$displayBlock = 'block';
+								}
+								?>
+								<div id="tfdiv-<?php echo $currentImageId.'-'.$fragCnt; ?>" style="display:<?php echo $displayBlock; ?>;">
+									<form id="tfeditform-<?php echo $prlid; ?>" name="tfeditform-<?php echo $prlid; ?>" method="post" action="occurrenceeditor.php">
+										<div>
+											<textarea name="rawtext" rows="12" cols="48" style="width:97%"><?php echo $rArr['raw']; ?></textarea>
+										</div>
+										<div title="OCR Notes" style="text-align:left;">
+											<b><?php echo $LANG['NOTES']; ?>:</b>
+											<input name="rawnotes" type="text" value="<?php echo $rArr['notes']; ?>" style="width:97%;" />
+										</div>
+										<div title="OCR Source" style="text-align:left;">
+											<b><?php echo $LANG['SOURCE']; ?>:</b>
+											<input name="rawsource" type="text" value="<?php echo $rArr['source']; ?>" style="width:97%;" />
+										</div>
+										<div style="float:left;margin-left:10px;">
+											<input type="hidden" name="editprlid" value="<?php echo $prlid; ?>" />
+											<input type="hidden" name="collid" value="<?php echo $collId; ?>" />
+											<input type="hidden" name="occid" value="<?php echo $occId; ?>" />
+											<input type="hidden" name="occindex" value="<?php echo $occIndex; ?>" />
+											<input type="hidden" name="csmode" value="<?php echo $crowdSourceMode; ?>" />
+											<button name="submitaction" type="submit" value="Save OCR Edits" ><?php echo $LANG['SAVE_OCR_EDITS']; ?></button>
+										</div>
+										<div style="float:left;margin-left:20px;">
+											<input type="hidden" name="iurl" value="<?php echo $iUrl; ?>" />
+											<input type="hidden" id="cnumber" name="cnumber" value="<?php echo array_key_exists('catalognumber',$occArr)?$occArr['catalognumber']:''; ?>" />
+											<?php
+											if(isset($NLP_SALIX_ACTIVATED) && $NLP_SALIX_ACTIVATED){
+												echo '<input name="salixocr" type="button" value="SALIX Parser" onclick="nlpSalix(this,'.$prlid.')" />';
+												echo '<img id="workingcircle_salix-'.$prlid.'" src="../../images/workingcircle.gif" style="display:none;" />';
+											}
+											if(isset($NLP_LBCC_ACTIVATED) && $NLP_LBCC_ACTIVATED){
+												echo '<input id="nlplbccbutton" name="nlplbccbutton" type="button" value="LBCC Parser" onclick="nlpLbcc(this,'.$prlid.')" />';
+												echo '<img id="workingcircle_lbcc-'.$prlid.'" src="../../images/workingcircle.gif" style="display:none;" />';
+											}
+											?>
+										</div>
+									</form>
+									<div style="float:right;font-weight:bold;margin-right:20px;">
+										<?php
+										echo $fragCnt.' of '.count($fArr);
+										if(count($fArr) > 1){
+											?>
+											<a href="#" onclick="return nextRawText(<?php echo $currentImageId.','.($fragCnt+1); ?>)">=&gt;&gt;</a>
+											<?php
+										}
+										?>
+									</div>
+									<div style="clear:both;">
+										<form name="tfdelform-<?php echo $prlid; ?>" method="post" action="occurrenceeditor.php" style="margin-left:10px;width:100px;" >
+											<input type="hidden" name="delprlid" value="<?php echo $prlid; ?>" />
+											<input type="hidden" name="collid" value="<?php echo $collId; ?>" />
+											<input type="hidden" name="occid" value="<?php echo $occId; ?>" /><br/>
+											<input type="hidden" name="occindex" value="<?php echo $occIndex; ?>" />
+											<input type="hidden" name="csmode" value="<?php echo $crowdSourceMode; ?>" />
+											<button name="submitaction" type="submit" value="Delete OCR" ><?php echo $LANG['DELETE_OCR']; ?></button>
+										</form>
+									</div>
+								</div>
+								<?php
+								$fragCnt++;
+							}
+						}
+						?>
+					</div>
+				</div>
+			</div>
 		</div>
 	</fieldset>
 </div>
