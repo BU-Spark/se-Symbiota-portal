@@ -177,6 +177,55 @@ function ocrImage(ocrButton, target, imgidVar, imgCnt){
 	});
 }
 
+function quickEntryOcrImage(ocrButton, target, imgidVar, imgCnt){
+	ocrButton.disabled = true;
+	let wcElem = document.getElementById("workingcircle-"+target+"-"+imgCnt);
+	wcElem.style.display = "inline";
+	
+	let imgObj = document.getElementById("activeimg-"+imgCnt);
+	let xVar = 0;
+	let yVar = 0;
+	let wVar = 1;
+	let hVar = 1;
+	let ocrBestVar = 0;
+
+	if(document.getElementById("ocrfull-"+target).checked == false){
+		xVar = $(imgObj).imagetool("properties").x;
+		yVar = $(imgObj).imagetool("properties").y;
+		wVar = $(imgObj).imagetool("properties").w;
+		hVar = $(imgObj).imagetool("properties").h;
+	}
+	if(document.getElementById("ocrbest").checked == true){
+		ocrBestVar = 1;
+	}
+
+	$.ajax({
+		type: "POST",
+		url: "../quickentry/rpc/ocrimage.php",
+		data: { imgid: imgidVar, target: target, ocrbest: ocrBestVar, x: xVar, y: yVar, w: wVar, h: hVar }
+	}).done(function( msg ) {
+		let rawStr = msg;
+		document.getElementById("tfeditdiv-"+imgCnt).style.display = "none";
+		document.getElementById("tfadddiv-"+imgCnt).style.display = "block";
+		let addform = document.getElementById("ocraddform-"+imgCnt);
+		addform.rawtext.innerText = rawStr;
+		addform.rawtext.textContent = rawStr;
+		//Add OCR source with date
+		let today = new Date();
+		let dd = today.getDate();
+		let mm = today.getMonth()+1; //January is 0!
+		let yyyy = today.getFullYear();
+		if(dd<10) dd='0'+dd;
+		if(mm<10) mm='0'+mm;
+		if(target == "tess") target = "Tesseract";
+		else target = "Digi-Leap";
+		addform.rawsource.value = target+": "+yyyy+"-"+mm+"-"+dd;
+		
+		wcElem.style.display = "none";
+		ocrButton.disabled = false;
+	});
+}
+
 function nlpLbcc(nlpButton,prlid){
 	document.getElementById("workingcircle_lbcc-"+prlid).style.display = "inline";
 	nlpButton.disabled = true;
