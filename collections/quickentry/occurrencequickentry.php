@@ -1019,11 +1019,71 @@ else{
 								</span>
 							</div>
 						</section> 
+						<table class = "" style = "margin-top: 10px;">									
+							<tr>
+								<td>
+									<div id="bottomSubmitDiv">
+									<input type="hidden" name="csmode" value="<?php echo $crowdSourceMode; ?>">
+									<input type="hidden" name="collid" value="<?php echo $collId; ?>">
+									<input type="hidden" name="batchid" value="<?php echo $batchId; ?>">
+									<input type="hidden" name="imgid" value="<?php echo $imgId; ?>">
+									<input type="hidden" name="imgindex" value="<?php echo $currentImgIndex; ?>">
+									<input type="hidden" name="barcode" value="<?php echo $barcode; ?>">
+									<input type="hidden" name="occid" value="<?php echo $occId; ?>">
+									<input type="hidden" name="occindex" value="<?php echo $occIndex; ?>">
+										<?php
+										if($occId){
+											?>
+											<div style="float:left">
+												<div id="editButtonDiv">
+													<button type="submit" id="saveEditsButton" name="submitaction" value="saveOccurEdits" onclick="return verifyFullFormEdits(this.form)" disabled><?php echo $LANG['SAVE_EDITS']; ?></button>
+													<button 
+														type="submit" 
+														value="Previous" 
+														onclick="navigateToRecordNew(<?php echo $crowdSourceMode . ', ' . $goToMode . ', ' . $collId . ', ' . $batchId . ', ' . $prevImgid . ', ' . ($currentImgIndex-1) . ', ' . $prevBarcode . ', ' . $prevOccid . ', ' . ($currentImgIndex-1); ?>)">
+														Previous
+													</button>
+													<a href="../quickentry/transcribe.php?collid=<?php echo $collId; ?>" >
+														<button type="button" value="Done" onclick="navigateToURL(<?php echo $collId; ?>)">Done</button>
+													</a>
+													<button 
+														type="submit" 
+														value="Next" 
+														onclick="navigateToRecordNew(<?php echo $crowdSourceMode . ', ' . $goToMode . ', ' . $collId . ', ' . $batchId . ', ' . $nextImgid . ', ' . ($currentImgIndex+1) . ', ' . $nextBarcode . ', ' . $nextOccid . ', ' . ($currentImgIndex+1); ?>)">
+														Next
+													</button>
+													<input type="hidden" name="occindex" value="<?php echo is_numeric($occIndex)?$occIndex:''; ?>" />
+													<input type="hidden" name="editedfields" value="" />
+												</div>
+											</div>
+												<?php
+										}
+										else{
+											?>
+											<div id="addButtonDiv">
+												<input name="recordenteredby" type="hidden" value="<?php echo $PARAMS_ARR['un']; ?>" />
+												<button name="submitaction" type="submit" value="addOccurRecord" style="width:150px;font-weight:bold;margin:10px;"><?php echo $LANG['ADD_RECORD']; ?></button>
+												<input name="qrycnt" type="hidden" value="<?php echo $qryCnt?$qryCnt:''; ?>" />
+												<div style="margin-left:15px;font-weight:bold;">
+													<?php echo $LANG['FOLLOW_UP']; ?>:
+												</div>
+												<div style="margin-left:20px;">
+													<input name="gotomode" type="radio" value="1" <?php echo ($goToMode==1?'CHECKED':''); ?> /> <?php echo $LANG['GO_TO_NEW']; ?><br/>
+													<input name="gotomode" type="radio" value="2" <?php echo ($goToMode==2?'CHECKED':''); ?> /> <?php echo $LANG['GO_NEW_CARRYOVER']; ?><br/>
+													<input name="gotomode" type="radio" value="0" <?php echo (!$goToMode?'CHECKED':''); ?> /> <?php echo $LANG['REMAIN_ON_PAGE']; ?>
+												</div>
+											</div>
+											<?php
+										}
+										?>
+									</div>
+								</td>
+							</tr>
+						</table>
 					</div>  
 					<!-- column left ends -->
 
 					<!-- image part -->
-					<!-- TODO: implement image code from old form, see collections/editor/includes/imagetab.php and check the embedded code to get started -->
 					<div class = "column right">
 						<div class="field-block title">
 							<h3>Image</h3>
@@ -1033,69 +1093,7 @@ else{
 								include_once($SERVER_ROOT.'/collections/editor/includes/quickentryimgprocessor.php');
 							?>
 						</div>
-
-					</div>  
-					<table class = "column left" style = "margin-top: -80px;">									
-						<tr>
-							<td>
-								<div id="bottomSubmitDiv">
-								<input type="hidden" name="csmode" value="<?php echo $crowdSourceMode; ?>">
-								<input type="hidden" name="collid" value="<?php echo $collId; ?>">
-								<input type="hidden" name="batchid" value="<?php echo $batchId; ?>">
-								<input type="hidden" name="imgid" value="<?php echo $imgId; ?>">
-								<input type="hidden" name="imgindex" value="<?php echo $currentImgIndex; ?>">
-								<input type="hidden" name="barcode" value="<?php echo $barcode; ?>">
-								<input type="hidden" name="occid" value="<?php echo $occId; ?>">
-								<input type="hidden" name="occindex" value="<?php echo $occIndex; ?>">
-									<?php
-									if($occId){
-										?>
-										<div style="float:left">
-											<div id="editButtonDiv">
-												<button type="submit" id="saveEditsButton" name="submitaction" value="saveOccurEdits" onclick="return verifyFullFormEdits(this.form)" disabled><?php echo $LANG['SAVE_EDITS']; ?></button>
-												<button 
-													type="submit" 
-													value="Previous" 
-													onclick="navigateToRecordNew(<?php echo $crowdSourceMode . ', ' . $goToMode . ', ' . $collId . ', ' . $batchId . ', ' . $prevImgid . ', ' . ($currentImgIndex-1) . ', ' . $prevBarcode . ', ' . $prevOccid . ', ' . ($currentImgIndex-1); ?>)">
-													Previous
-												</button>
-												<a href="../quickentry/transcribe.php?collid=<?php echo $collId; ?>" >
-													<button type="button" value="Done" onclick="navigateToURL(<?php echo $collId; ?>)">Done</button>
-												</a>
-												<button 
-													type="submit" 
-													value="Next" 
-													onclick="navigateToRecordNew(<?php echo $crowdSourceMode . ', ' . $goToMode . ', ' . $collId . ', ' . $batchId . ', ' . $nextImgid . ', ' . ($currentImgIndex+1) . ', ' . $nextBarcode . ', ' . $nextOccid . ', ' . ($currentImgIndex+1); ?>)">
-													Next
-												</button>
-												<input type="hidden" name="occindex" value="<?php echo is_numeric($occIndex)?$occIndex:''; ?>" />
-												<input type="hidden" name="editedfields" value="" />
-											</div>
-										</div>
-											<?php
-									}
-									else{
-										?>
-										<div id="addButtonDiv">
-											<input name="recordenteredby" type="hidden" value="<?php echo $PARAMS_ARR['un']; ?>" />
-											<button name="submitaction" type="submit" value="addOccurRecord" style="width:150px;font-weight:bold;margin:10px;"><?php echo $LANG['ADD_RECORD']; ?></button>
-											<input name="qrycnt" type="hidden" value="<?php echo $qryCnt?$qryCnt:''; ?>" />
-											<div style="margin-left:15px;font-weight:bold;">
-												<?php echo $LANG['FOLLOW_UP']; ?>:
-											</div>
-											<div style="margin-left:20px;">
-												<input name="gotomode" type="radio" value="1" <?php echo ($goToMode==1?'CHECKED':''); ?> /> <?php echo $LANG['GO_TO_NEW']; ?><br/>
-												<input name="gotomode" type="radio" value="2" <?php echo ($goToMode==2?'CHECKED':''); ?> /> <?php echo $LANG['GO_NEW_CARRYOVER']; ?><br/>
-												<input name="gotomode" type="radio" value="0" <?php echo (!$goToMode?'CHECKED':''); ?> /> <?php echo $LANG['REMAIN_ON_PAGE']; ?>
-											</div>
-										</div>
-										<?php
-									}
-									?>
-								</div>
-							</td>
-						</tr>
-					</table>
+					</div>  				
 				</form>
 				
 			</div>
