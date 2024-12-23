@@ -5,6 +5,96 @@ else include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/imgpro
 	
 <script src="../../js/symb/collections.editor.imgtools.js?ver=3" type="text/javascript"></script>
 <script>
+	function quickEntryOcrImage(ocrButton, imgidVar, imgCnt) {
+		console.log("Function quickEntryOcrImage called");
+		imgCnt = 0; // Reset image counter
+		ocrButton.disabled = true; // Disable button to prevent multiple clicks
+
+		// Show loading spinner
+		let wcElem = document.getElementById("workingcircle-tess-" + imgCnt);
+		wcElem.style.display = "inline";
+
+		// Get selected OCR method
+		let target = document.querySelector('input[name="ocr-method"]:checked').value;
+
+		if (target === "external") {
+			// External OCR API call
+			console.log("external chosen");
+			$.ajax({
+				type: "POST",
+				url: "../quickentry/rpc/externalocr.php",
+				data: { imgid: imgidVar },
+				success: function(response) {
+					// Ensure response is parsed as JSON
+					let decodedResponse;
+					if (typeof response === "string") {
+						try {
+							decodedResponse = JSON.parse(response);
+						} catch (e) {
+							console.error("Error parsing JSON response:", e);
+							decodedResponse = response; // Use raw response if JSON parsing fails
+						}
+					} else {
+						decodedResponse = response;
+					}
+
+					// Format the JSON object into plain text
+					let plainTextResponse = "";
+					if (typeof decodedResponse === "object") {
+						for (const [key, value] of Object.entries(decodedResponse)) {
+							plainTextResponse += `${key}: ${value}\n`;
+						}
+					} else {
+						plainTextResponse = decodedResponse;
+					}
+
+					// Update the textarea with formatted text
+					let rawtextBox = document.getElementById("rawtext");
+					console.log("rawtextBox:", rawtextBox);
+					rawtextBox.value = plainTextResponse; // Use 'value' to set the content of the <textarea>
+
+					wcElem.style.display = "none";
+					ocrButton.disabled = false;
+				},
+				error: function(xhr, status, error) {
+					console.error("External OCR Error: ", error);
+					wcElem.style.display = "none";
+					ocrButton.disabled = false;
+				}
+			});
+		} else {
+			console.log("Tesseract chosen");
+			// Tesseract OCR API call
+			$.ajax({
+				type: "POST",
+				url: "../quickentry/rpc/ocrimage.php",
+				data: { imgid: imgidVar, target: target },
+				success: function(msg) {
+					let rawStr = msg;
+					let addform = document.getElementById("ocraddform");
+
+					
+					addform.rawtext.innerText = rawStr;
+					addform.rawtext.textContent = rawStr;
+
+					// Add source information
+					let today = new Date();
+					let dd = today.getDate();
+					let mm = today.getMonth() + 1;
+					let yyyy = today.getFullYear();
+					if (dd < 10) dd = '0' + dd;
+					if (mm < 10) mm = '0' + mm;
+					addform.rawsource.value = "Tesseract: " + yyyy + "-" + mm + "-" + dd;
+
+					// Hide spinner and re-enable button
+					wcElem.style.display = "none";
+					ocrButton.disabled = false;
+				}
+			});
+		}
+	}
+
+
 	function nextProcessingImage() {
 		var imgArr = <?php echo json_encode($imgUrlCollection); ?>;
 		var currentImageIndex = parseInt(document.getElementById('current-image-index').textContent);
@@ -122,18 +212,37 @@ else include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/imgpro
 				</div>
 				<div style="width:100%;clear:both;">
 					<h4 style="text-align:left;">
-						Tesseract OCR
+						Choose your OCR model
 					</h4>
-					<fieldset class="ocr-box" style="text-align:left; margin-bottom:15px">
-						<input type="checkbox" id="ocrfull-tess" value="1"/> <?php echo $LANG['OCR_WHOLE_IMG']; ?><br/>
-						<input type="checkbox" id="ocrbest" value="1" /> <?php echo $LANG['OCR_ANALYSIS']; ?>
-						<div>
+					<fieldset class="" style="text-align:left; margin-bottom:15px">
+						<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+							<div>
+								<label>
+									<input type="radio" name="ocr-method" id="ocr-method-tess" value="tess" checked />
+									<?php echo ("Tesseract OCR"); ?>
+								</label><br />
+								<label>
+									<input type="radio" name="ocr-method" id="ocr-method-external" value="external" />
+									<?php echo ("External OCR"); ?>
+								</label>
+							</div>
+							<div>
+								<label>
+									<input type="checkbox" id="ocr-full" value="1" />
+									<?php echo $LANG['OCR_WHOLE_IMG']; ?>
+								</label><br />
+								<label>
+									<input type="checkbox" id="ocr-analysis" value="1" />
+									<?php echo $LANG['OCR_ANALYSIS']; ?>
+								</label>
+							</div>
+						</div>
+						<div style="margin-top:15px">
 							<button 
 								value="OCR Image" 
-								onclick="quickEntryOcrImage(this, 'tess', <?php echo json_encode($imgId); ?>, <?php echo json_encode($currentImageId); ?>);">
+								onclick="quickEntryOcrImage(this, <?php echo $imgId; ?>, <?php echo $currentImageId; ?>);">
 								<?php echo $LANG['OCR_IMAGE']; ?>
 							</button>
-							<!-- <button value="OCR Image" onclick="quickEntryOcrImage(this,'tess', <?php // echo $imgId.','.$currentImageId; ?>);" ><?php // echo $LANG['OCR_IMAGE']; ?></button> -->
 							<img id="workingcircle-tess-<?php echo $currentImageId; ?>" src="../../images/workingcircle.gif" style="display:none;" />
 						</div>
 					</fieldset>
@@ -146,7 +255,7 @@ else include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/imgpro
 							<div>
 								<button 
 									value="OCR Image" 
-									onclick="quickEntryOcrImage(this, 'tess', <?php echo json_encode($imgId); ?>, <?php echo json_encode($currentImageId); ?>);">
+									onclick="quickEntryOcrImage(this, 'tess', <?php echo $imgId; ?>, <?php echo $currentImageId; ?>);">
 									<?php echo $LANG['OCR_IMAGE']; ?>
 								</button>
 								<img id="workingcircle-digi-<?php echo $currentImageId; ?>" src="../../images/workingcircle.gif" style="display:none;" />
@@ -157,10 +266,10 @@ else include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/imgpro
 					?>
 				</div>
 				<div style="width:100%;clear:both;">
-					<div id="tfadddiv-<?php echo $currentImageId; ?>" style="display:none;>
-						<form id="ocraddform-<?php echo $currentImageId; ?>" name="ocraddform-<?php echo $imgId; ?>" method="post" action="occurrencequickentry.php">
+					<div id="QEtfadddiv-<?php echo $currentImageId; ?>" style="">
+						<form id="quickocraddform-<?php echo $currentImageId; ?>" name="ocraddform-<?php echo $imgId; ?>" method="post" action="occurrencequickentry.php">
 							<div>
-								<textarea name="rawtext" rows="12" cols="48" style="width:97%;background-color:#F8F8F8;"></textarea>
+								<textarea id="rawtext" name="rawtext" rows="12" cols="48" style="width:97%;background-color:#F8F8F8;"></textarea>
 							</div>
 							<div title="OCR Notes" style="text-align:left; margin-top:10px">
 								<b><?php echo $LANG['NOTES']; ?>:</b>
@@ -182,7 +291,7 @@ else include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/imgpro
 						<div style="font-weight:bold;float:right;"><?php echo '&lt;'.$LANG['NEW'].'&gt; '.$LANG['OF'].' '.count($fArr); ?>
 						</div>
 					</div>
-					<div id="tfeditdiv-<?php echo $currentImageId; ?>" style="clear:both;">
+					<div id="QEtfeditdiv-<?php echo $currentImageId; ?>" style="clear:both;">
 						<?php
 						if(array_key_exists($imgId,$fragArr)){
 							$fragCnt = 1;
