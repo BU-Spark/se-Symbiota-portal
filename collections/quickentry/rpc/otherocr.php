@@ -1,6 +1,6 @@
 <?php
 
-$response = shell_exec("curl http://ocr-server:8050/output/1");
+$response = shell_exec("curl http://ocr-server:8050/output/2");
 
 // Decode the JSON response
 $decodedResponse = json_decode($response, true);

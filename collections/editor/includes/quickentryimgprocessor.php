@@ -15,7 +15,7 @@ else include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/imgpro
 		wcElem.style.display = "inline";
 
 		// Get selected OCR method
-		let target = document.querySelector('input[name="ocr-method"]:checked').value;
+		let target = document.getElementById("ocr-method").value;
 
 		if (target === "external") {
 			// External OCR API call
@@ -23,6 +23,51 @@ else include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/imgpro
 			$.ajax({
 				type: "POST",
 				url: "../quickentry/rpc/externalocr.php",
+				data: { imgid: imgidVar },
+				success: function(response) {
+					// Ensure response is parsed as JSON
+					let decodedResponse;
+					if (typeof response === "string") {
+						try {
+							decodedResponse = JSON.parse(response);
+						} catch (e) {
+							console.error("Error parsing JSON response:", e);
+							decodedResponse = response; // Use raw response if JSON parsing fails
+						}
+					} else {
+						decodedResponse = response;
+					}
+
+					// Format the JSON object into plain text
+					let plainTextResponse = "";
+					if (typeof decodedResponse === "object") {
+						for (const [key, value] of Object.entries(decodedResponse)) {
+							plainTextResponse += `${key}: ${value}\n`;
+						}
+					} else {
+						plainTextResponse = decodedResponse;
+					}
+
+					// Update the textarea with formatted text
+					let rawtextBox = document.getElementById("rawtext");
+					console.log("rawtextBox:", rawtextBox);
+					rawtextBox.value = plainTextResponse; // Use 'value' to set the content of the <textarea>
+
+					wcElem.style.display = "none";
+					ocrButton.disabled = false;
+				},
+				error: function(xhr, status, error) {
+					console.error("External OCR Error: ", error);
+					wcElem.style.display = "none";
+					ocrButton.disabled = false;
+				}
+			});
+		} else if (target === "others") {
+			// External OCR API call
+			console.log("external chosen");
+			$.ajax({
+				type: "POST",
+				url: "../quickentry/rpc/otherocr.php",
 				data: { imgid: imgidVar },
 				success: function(response) {
 					// Ensure response is parsed as JSON
@@ -177,6 +222,24 @@ else include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/imgpro
 		catch(err) {
 		}
 	}
+
+	function UpdateFromWithOCR() {
+        let ocr_recordedBy = "<?php echo $ocr_recordedBy; ?>";
+        let recordedByField = document.getElementById("ffrecordedby");
+
+        // Update value
+        if (recordedByField) {
+            recordedByField.value = ocr_recordedBy;
+
+            // Trigger the onchange event manually if needed
+            recordedByField.dispatchEvent(new Event("change"));
+        } else {
+            console.error("Field with ID 'ffrecordedby' not found.");
+        }
+
+        // Prevent the default button action (form submission or other behaviors)
+        return false;
+	}
 </script>
 <style>
 	.ocr-box{ padding: 5px; float:left; }
@@ -217,14 +280,12 @@ else include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/imgpro
 					<fieldset class="" style="text-align:left; margin-bottom:15px">
 						<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
 							<div>
-								<label>
-									<input type="radio" name="ocr-method" id="ocr-method-tess" value="tess" checked />
-									<?php echo ("Tesseract OCR"); ?>
-								</label><br />
-								<label>
-									<input type="radio" name="ocr-method" id="ocr-method-external" value="external" />
-									<?php echo ("External OCR"); ?>
-								</label>
+								<label for="ocr-method">Select OCR Method:</label>
+								<select name="ocr-method" id="ocr-method">
+									<option value="tess" selected><?php echo ("Tesseract OCR"); ?></option>
+									<option value="external"><?php echo ("External OCR"); ?></option>
+									<option value="others"><?php echo ("Other OCR"); ?></option>
+								</select>
 							</div>
 							<div>
 								<label>
@@ -285,6 +346,7 @@ else include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/imgpro
 								<input type="hidden" name="collid" value="<?php echo $collId; ?>" />
 								<input type="hidden" name="occindex" value="<?php echo $occIndex; ?>" />
 								<input type="hidden" name="csmode" value="<?php echo $crowdSourceMode; ?>" />
+								<button name="updateForm" value="Update Form" onclick="return UpdateFromWithOCR()" style="margin-top:10px;"><?php echo ("Update Form"); ?></button>
 								<button name="submitaction" type="submit" value="Save OCR" style="margin-top:10px;"><?php echo $LANG['SAVE_OCR']; ?></button>
 							</div>
 						</form>
