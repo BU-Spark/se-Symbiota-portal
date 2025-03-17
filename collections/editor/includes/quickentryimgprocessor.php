@@ -5,6 +5,8 @@ else include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/imgpro
 	
 <script src="../../js/symb/collections.editor.imgtools.js?ver=3" type="text/javascript"></script>
 <script>
+	let storedOcrResponse = "";
+
 	function quickEntryOcrImage(ocrButton, imgidVar, imgCnt) {
 		console.log("Function quickEntryOcrImage called");
 		imgCnt = 0; // Reset image counter
@@ -14,131 +16,109 @@ else include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/imgpro
 		let wcElem = document.getElementById("workingcircle-tess-" + imgCnt);
 		wcElem.style.display = "inline";
 
-		// Get selected OCR method
+		// Get selected OCR 
 		let target = document.getElementById("ocr-method").value;
 
+		let ocrUrl = "";
 		if (target === "external") {
-			// External OCR API call
-			console.log("external chosen");
-			$.ajax({
-				type: "POST",
-				url: "../quickentry/rpc/externalocr.php",
-				data: { imgid: imgidVar },
-				success: function(response) {
-					// Ensure response is parsed as JSON
-					let decodedResponse;
-					if (typeof response === "string") {
-						try {
-							decodedResponse = JSON.parse(response);
-						} catch (e) {
-							console.error("Error parsing JSON response:", e);
-							decodedResponse = response; // Use raw response if JSON parsing fails
-						}
-					} else {
-						decodedResponse = response;
-					}
-
-					// Format the JSON object into plain text
-					let plainTextResponse = "";
-					if (typeof decodedResponse === "object") {
-						for (const [key, value] of Object.entries(decodedResponse)) {
-							plainTextResponse += `${key}: ${value}\n`;
-						}
-					} else {
-						plainTextResponse = decodedResponse;
-					}
-
-					// Update the textarea with formatted text
-					let rawtextBox = document.getElementById("rawtext");
-					console.log("rawtextBox:", rawtextBox);
-					rawtextBox.value = plainTextResponse; // Use 'value' to set the content of the <textarea>
-
-					wcElem.style.display = "none";
-					ocrButton.disabled = false;
-				},
-				error: function(xhr, status, error) {
-					console.error("External OCR Error: ", error);
-					wcElem.style.display = "none";
-					ocrButton.disabled = false;
-				}
-			});
+			ocrUrl = "../quickentry/rpc/externalocr.php";
 		} else if (target === "others") {
-			// External OCR API call
-			console.log("external chosen");
-			$.ajax({
-				type: "POST",
-				url: "../quickentry/rpc/otherocr.php",
-				data: { imgid: imgidVar },
-				success: function(response) {
-					// Ensure response is parsed as JSON
-					let decodedResponse;
-					if (typeof response === "string") {
-						try {
-							decodedResponse = JSON.parse(response);
-						} catch (e) {
-							console.error("Error parsing JSON response:", e);
-							decodedResponse = response; // Use raw response if JSON parsing fails
-						}
-					} else {
+			ocrUrl = "../quickentry/rpc/otherocr.php";
+		} else {
+			ocrUrl = "../quickentry/rpc/ocrimage.php";
+		}
+
+		$.ajax({
+			type: "POST",
+			url: ocrUrl,
+			data: { imgid: imgidVar, target: target },
+			success: function(response) {
+				let decodedResponse;
+				if (typeof response === "string") {
+					try {
+						decodedResponse = JSON.parse(response);
+					} catch (e) {
+						console.error("Error parsing JSON response:", e);
 						decodedResponse = response;
 					}
+				} else {
+					decodedResponse = response;
+				}
 
-					// Format the JSON object into plain text
-					let plainTextResponse = "";
-					if (typeof decodedResponse === "object") {
-						for (const [key, value] of Object.entries(decodedResponse)) {
-							plainTextResponse += `${key}: ${value}\n`;
-						}
-					} else {
-						plainTextResponse = decodedResponse;
+				let plainTextResponse = "";
+				if (typeof decodedResponse === "object") {
+					for (const [key, value] of Object.entries(decodedResponse)) {
+						plainTextResponse += `${key}: ${value}\n`;
 					}
-
-					// Update the textarea with formatted text
-					let rawtextBox = document.getElementById("rawtext");
-					console.log("rawtextBox:", rawtextBox);
-					rawtextBox.value = plainTextResponse; // Use 'value' to set the content of the <textarea>
-
-					wcElem.style.display = "none";
-					ocrButton.disabled = false;
-				},
-				error: function(xhr, status, error) {
-					console.error("External OCR Error: ", error);
-					wcElem.style.display = "none";
-					ocrButton.disabled = false;
+				} else {
+					plainTextResponse = decodedResponse;
 				}
-			});
-		} else {
-			console.log("Tesseract chosen");
-			// Tesseract OCR API call
-			$.ajax({
-				type: "POST",
-				url: "../quickentry/rpc/ocrimage.php",
-				data: { imgid: imgidVar, target: target },
-				success: function(msg) {
-					let rawStr = msg;
-					let addform = document.getElementById("ocraddform");
 
-					
-					addform.rawtext.innerText = rawStr;
-					addform.rawtext.textContent = rawStr;
+				// Store in global variable for later use
+				storedOcrResponse = plainTextResponse;
 
-					// Add source information
-					let today = new Date();
-					let dd = today.getDate();
-					let mm = today.getMonth() + 1;
-					let yyyy = today.getFullYear();
-					if (dd < 10) dd = '0' + dd;
-					if (mm < 10) mm = '0' + mm;
-					addform.rawsource.value = "Tesseract: " + yyyy + "-" + mm + "-" + dd;
+				// Update the textarea
+				let rawtextBox = document.getElementById("rawtext");
+				rawtextBox.value = plainTextResponse;
 
-					// Hide spinner and re-enable button
-					wcElem.style.display = "none";
-					ocrButton.disabled = false;
-				}
-			});
-		}
+				wcElem.style.display = "none";
+				ocrButton.disabled = false;
+			},
+			error: function(xhr, status, error) {
+				storedOcrResponse = "OCR Failed";
+				console.error("External OCR Error: ", error);
+				wcElem.style.display = "none";
+				ocrButton.disabled = false;
+			}
+		});
 	}
 
+	function confirmOCRresult() {
+		if (event) event.preventDefault();
+
+		let rawtextBox = document.getElementById("rawtext");
+
+		if (rawtextBox) {
+			storedOcrResponse = rawtextBox.value.trim();
+			console.log("OCR response confirmed");
+		} else {
+			console.error("No ORC result");
+		}
+
+		return false; 
+	}
+
+	function UpdateFromWithOCR() {
+		// if (!storedOcrResponse || storedOcrResponse.trim() === "") {
+		// 	console.error("No OCR response available");
+		// 	return false;
+		// }
+		// let lines = storedOcrResponse.split("\n");
+		let lines = ["ffrecordedby: Mary", "ffeventdate: 2000-01-01"]; // test with dummy value
+		
+		lines.forEach(line => {
+			if (line.trim() === "") return;
+
+			// Split key and value by ": "
+			let [key, ...valueParts] = line.split(": ");
+			let value = valueParts.join(": ").trim();
+
+			// Find the input field by key
+			let field = document.getElementById(key.trim());
+
+			if (field) {
+				// Update the field's value
+				field.value = value;
+
+				field.dispatchEvent(new Event("change"));
+			} else {
+				console.warn(`Field with ID '${key}' not found.`);
+			}
+		});
+		// let field = document.getElementById("ffrecordedby");
+		// field.value = storedOcrResponse;
+        return false;
+	}
 
 	function nextProcessingImage() {
 		var imgArr = <?php echo json_encode($imgUrlCollection); ?>;
@@ -221,24 +201,6 @@ else include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/imgpro
 		}
 		catch(err) {
 		}
-	}
-
-	function UpdateFromWithOCR() {
-        let ocr_recordedBy = "<?php echo $ocr_recordedBy; ?>";
-        let recordedByField = document.getElementById("ffrecordedby");
-
-        // Update value
-        if (recordedByField) {
-            recordedByField.value = ocr_recordedBy;
-
-            // Trigger the onchange event manually if needed
-            recordedByField.dispatchEvent(new Event("change"));
-        } else {
-            console.error("Field with ID 'ffrecordedby' not found.");
-        }
-
-        // Prevent the default button action (form submission or other behaviors)
-        return false;
 	}
 </script>
 <style>
@@ -331,6 +293,9 @@ else include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/imgpro
 						<form id="quickocraddform-<?php echo $currentImageId; ?>" name="ocraddform-<?php echo $imgId; ?>" method="post" action="occurrencequickentry.php">
 							<div>
 								<textarea id="rawtext" name="rawtext" rows="12" cols="48" style="width:97%;background-color:#F8F8F8;"></textarea>
+							</div>
+							<div style="text-align:left; margin-top:-1px; margin-left:10px;">
+								<button name="confirmOCR" value="confirm OCR" onclick="return confirmOCRresult()" style="margin-top:5px;"><?php echo ("Confirm OCR"); ?></button>
 							</div>
 							<div title="OCR Notes" style="text-align:left; margin-top:10px">
 								<b><?php echo $LANG['NOTES']; ?>:</b>
