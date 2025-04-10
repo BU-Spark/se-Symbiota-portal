@@ -11,8 +11,8 @@ services:
       - /home/herbaria/running-symbiota:/var/www/html/symbiota
     depends_on:
       - symbiota-db
-      - ocr-server
-
+    networks:
+      - symbiota-network
   symbiota-db:
     build:
       context: ./mysqlContainer
@@ -26,16 +26,12 @@ services:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
-      - /home/herbaria/running-containers/db-backups:/source
-
-  ocr-server:
-    build:
-      context: ./flaskContainer
-      dockerfile: Dockerfile
-    ports:
-      - "8050:8050"
-    volumes:
-      - /home/herbaria/running-containers/sample-ocr:/data
-
+      - /home/herbaria/running-containers/db-schemas:/source
+    networks:
+      - symbiota-network
 volumes:
   mysql-data:
+
+networks:
+  symbiota-network:
+    external: true
