@@ -1,6 +1,7 @@
 <?php
 include_once('../../config/symbini.php');
 include_once($SERVER_ROOT.'/content/lang/collections/editor/occurrenceeditor.'.$LANG_TAG.'.php');
+include_once('/rpc/externalocr.php');
 
 header("Content-Type: text/html; charset=".$CHARSET);
 
@@ -77,6 +78,19 @@ $moduleActivation = array();
 $statusStr = '';
 $navStr = '';
 $isEditor = 0;
+
+// new values returned by OCR
+// $catalogNumber = 0;
+// $collectionCode = 0;
+// $country = '';
+// $donatedBy = '';
+// $eventDate = '';
+// $institutionCode = 0;
+// $occurrenceID = 0;
+// $recordedBy = 0;
+// $scientificName = 0;
+// $yearDonated = 0;
+
 
 if($SYMB_UID){
 	//Set variables
@@ -640,6 +654,12 @@ else{
 				if(!$occArr && !$goToMode) $displayQuery = 1;
 				include 'includes/queryform.php';
 				?>
+				<h2>
+				<?php
+					echo("text");
+					echo($institutionCode);
+				?>
+				</h2>
 				<!-- this is nav bar division Home>>collection management>>... -->
 				<div id="navDiv">
 					<?php
@@ -849,7 +869,7 @@ else{
 							<div class="field-block">
 								<span class="field-label"><?php echo (defined('EVENTDATELABEL')?EVENTDATELABEL:'Date Collected'); ?></span>
 								<span class="field-elem">
-									<input size = '50' type="text" name="eventdate" value="<?php echo array_key_exists('eventdate',$occArr)?$occArr['eventdate']:''; ?>" onchange="eventDateChanged(this);" />
+									<input size = '50' type="text" name="eventdate" id="ffeventdate" value="<?php echo array_key_exists('eventdate',$occArr)?$occArr['eventdate']:''; ?>" onchange="eventDateChanged(this);" />
 								</span>
 							</div>
 							<div class="field-block">

@@ -39,31 +39,18 @@ h2{
     display: table;
     clear: both;
 }
-.nav-bar a{
-    background-color: #00FFFF;
-    color: black;
-    border-style: solid;
-    border-color: black;
-    margin: 0;
-}
-.nav-bar label{
-    background-color: #00FFFF;
-    color: black;
-    border-style: solid;
-    border-color: black;
-}
 .function-bar{
     border:1px solid black; 
     display: flex;
     align-items: center;
 }
 button{
-    color:black;
-    background-color: #34ace0;
+    color:white;
+    background-color: var(--darkest-color);
 }
 .btn label{
     color:black;
-    background-color: #34ace0;
+    background-color: var(--darkest-color);
     border-style: solid;
     border-color: black;
 }
@@ -92,4 +79,13 @@ button{
 .title{
     display: block;
     width: 100%;
+}
+
+.highlight-label {
+    font-weight: bold;
+    color: black;
+    background-color: var(--bright-color);
+    padding: 2px 4px;
+    border-radius: 3px;
+    transition: background-color 0.3s, color 0.3s;
 }
