@@ -4,8 +4,44 @@ else include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/imgpro
 ?>
 	
 <script src="../../js/symb/collections.editor.imgtools.js?ver=3" type="text/javascript"></script>
-<script>
+<style>
+	.highlight-label {
+		font-weight: bold;
+		color: darkred; /* optional for visibility */
+	}
+</style>
+<script defer>
 	let storedOcrResponse = "";
+	// this state variable used to check the state of the textBox, either "needsValidation" or "ready" to populate the fieldss
+	let updateState = "needsValidation";  
+
+	function handleUpdateButtonClick() {
+		if (updateState === "needsValidation") {
+			confirmOCRresult();
+			updateState = "ready";
+			const btn = document.getElementById("updateButton");
+			btn.innerText = "Update Form";
+			btn.value = "Update Form";
+			return false;
+		} else {
+			return UpdateFromWithOCR();
+		}
+	}
+
+	// detect changes in the rawtext textarea
+	window.addEventListener('DOMContentLoaded', function () {
+		const rawtextBox = document.getElementById("rawtext");
+		const updateButton = document.getElementById("updateButton");
+
+		if (rawtextBox) {
+			console.log("textBox udpated");
+			rawtextBox.addEventListener("input", function () {
+				updateState = "needsValidation";
+				updateButton.innerText = "Validate";
+				updateButton.value = "Validate";
+			});
+		}
+	});
 
 	function quickEntryOcrImage(ocrButton, imgidVar, imgCnt) {
 		console.log("Function quickEntryOcrImage called");
@@ -89,12 +125,13 @@ else include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/imgpro
 	}
 
 	function UpdateFromWithOCR() {
-		// if (!storedOcrResponse || storedOcrResponse.trim() === "") {
-		// 	console.error("No OCR response available");
-		// 	return false;
-		// }
-		// let lines = storedOcrResponse.split("\n");
-		let lines = ["ffrecordedby: Mary", "ffeventdate: 2000-01-01"]; // test with dummy value
+		if (!storedOcrResponse || storedOcrResponse.trim() === "") {
+			console.error("No OCR response available");
+			return false;
+		}
+
+		let lines = storedOcrResponse.split("\n");
+		// let lines = ["ffrecordedby: Mary", "ffeventdate: 2000-01-01"]; // test with dummy value
 		
 		lines.forEach(line => {
 			if (line.trim() === "") return;
@@ -102,18 +139,42 @@ else include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/imgpro
 			// Split key and value by ": "
 			let [key, ...valueParts] = line.split(": ");
 			let value = valueParts.join(": ").trim();
+			let field = null;
+
+			if (key === 'fact') {
+				field = document.getElementById("ffrecordedby");
+			} else if (key === 'length') {
+				field = document.getElementById("ffeventdate");
+			} else {
+				console.warn(`Unrecognized key '${key}' in OCR response.`);
+				return;
+			}
 
 			// Find the input field by key
-			let field = document.getElementById(key.trim());
-
 			if (field) {
-				// Update the field's value
 				field.value = value;
-
 				field.dispatchEvent(new Event("change"));
-			} else {
-				console.warn(`Field with ID '${key}' not found.`);
+
+				// Find the corresponding label and bold it
+				let fieldBlock = field.closest(".field-block");
+				if (fieldBlock) {
+					let label = fieldBlock.querySelector(".field-label");
+					if (label) {
+						label.classList.add("highlight-label");
+					}
+				}
 			}
+
+			// let field = document.getElementById(key.trim());
+
+			// if (field) {
+			// 	// Update the field's value
+			// 	field.value = value;
+
+			// 	field.dispatchEvent(new Event("change"));
+			// } else {
+			// 	console.warn(`Field with ID '${key}' not found.`);
+			// }
 		});
 		// let field = document.getElementById("ffrecordedby");
 		// field.value = storedOcrResponse;
@@ -294,9 +355,6 @@ else include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/imgpro
 							<div>
 								<textarea id="rawtext" name="rawtext" rows="12" cols="48" style="width:97%;background-color:#F8F8F8;"></textarea>
 							</div>
-							<div style="text-align:left; margin-top:-1px; margin-left:10px;">
-								<button name="confirmOCR" value="confirm OCR" onclick="return confirmOCRresult()" style="margin-top:5px;"><?php echo ("Confirm OCR"); ?></button>
-							</div>
 							<div title="OCR Notes" style="text-align:left; margin-top:10px">
 								<b><?php echo $LANG['NOTES']; ?>:</b>
 								<input name="rawnotes" type="text" value="" style="width:97%;" />
@@ -311,7 +369,7 @@ else include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/imgpro
 								<input type="hidden" name="collid" value="<?php echo $collId; ?>" />
 								<input type="hidden" name="occindex" value="<?php echo $occIndex; ?>" />
 								<input type="hidden" name="csmode" value="<?php echo $crowdSourceMode; ?>" />
-								<button name="updateForm" value="Update Form" onclick="return UpdateFromWithOCR()" style="margin-top:10px;"><?php echo ("Update Form"); ?></button>
+								<button id="updateButton" name="updateForm" name="updateForm" value="Validate" onclick="return handleUpdateButtonClick()" style="margin-top:10px;"><?php echo ("Validate"); ?></button>
 								<button name="submitaction" type="submit" value="Save OCR" style="margin-top:10px;"><?php echo $LANG['SAVE_OCR']; ?></button>
 							</div>
 						</form>
