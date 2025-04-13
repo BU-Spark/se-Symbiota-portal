@@ -435,14 +435,63 @@ function confirmOCRresult() {
 
 	let rawtextBox = document.getElementById("rawtext");
 
-	if (rawtextBox) {
-		storedOcrResponse = rawtextBox.value.trim();
-		console.log("OCR response confirmed");
-	} else {
-		console.error("No ORC result");
+	if (!rawtextBox) {
+		console.error("No OCR result box found");
+		return false;
 	}
 
-	return false; 
+	let rawText = rawtextBox.value.trim();
+
+	if (rawText === "") {
+		console.error("OCR result is empty");
+		alert("OCR result is empty!");
+		return false;
+	}
+
+	let lines = rawText.split("\n");
+	let allValid = true;
+
+	lines.forEach((line, index) => {
+		line = line.trim();
+		if (line === "") return; // skip empty lines
+
+		// Check for colon separator
+		if (!line.includes(": ")) {
+			console.error(`Line ${index + 1} is invalid: missing ': ' separator.`);
+			alert(`Error: Line ${index + 1} is invalid. Missing ': ' separator.`);
+			allValid = false;
+			return;
+		}
+
+		// Split key and value
+		let [key, ...valueParts] = line.split(": ");
+		let value = valueParts.join(": ").trim();
+
+		// Check key and value are not empty
+		if (!key.trim() || !value) {
+			console.error(`Line ${index + 1} is invalid: key or value is empty.`);
+			alert(`Error: Line ${index + 1} has an empty key or value.`);
+			allValid = false;
+			return;
+		}
+
+		// Check for unwanted quotes in key or value
+		if (key.includes('"') || value.includes('"')) {
+			console.error(`Line ${index + 1} is invalid: contains quotation marks.`);
+			alert(`Error: Line ${index + 1} should not contain quotation marks.`);
+			allValid = false;
+			return;
+		}
+	});
+
+	if (!allValid) {
+		console.warn("OCR confirmation aborted due to invalid format.");
+		return false;
+	}
+
+	storedOcrResponse = rawText;
+	console.log("OCR response confirmed");
+	return false;
 }
 
 function UpdateFromWithOCR() {
@@ -452,7 +501,6 @@ function UpdateFromWithOCR() {
 	}
 
 	let lines = storedOcrResponse.split("\n");
-	// let lines = ["ffrecordedby: Mary", "ffeventdate: 2000-01-01"]; // test with dummy value
 	
 	lines.forEach(line => {
 		if (line.trim() === "") return;
@@ -462,10 +510,20 @@ function UpdateFromWithOCR() {
 		let value = valueParts.join(": ").trim();
 		let field = null;
 
-		if (key === 'fact') {
+		if (key === 'recordedBy') {
 			field = document.getElementById("ffrecordedby");
-		} else if (key === 'length') {
+		} else if (key === 'location') {
+			field = document.getElementById("ffgeowithin");
+		} else if  (key === 'scientificName') {
+			field = document.getElementById("ffcurrname");
+		} else if  (key === 'eventDate') {
 			field = document.getElementById("ffeventdate");
+		} else if  (key === 'barcode') {
+			field = document.getElementById("barcode");
+		} else if  (key === 'institutionCode') {
+			field = document.getElementById("");
+		} else if  (key === 'image_path') {
+			field = document.getElementById("");
 		} else {
 			console.warn(`Unrecognized key '${key}' in OCR response.`);
 			return;
@@ -485,20 +543,7 @@ function UpdateFromWithOCR() {
 				}
 			}
 		}
-
-		// let field = document.getElementById(key.trim());
-
-		// if (field) {
-		// 	// Update the field's value
-		// 	field.value = value;
-
-		// 	field.dispatchEvent(new Event("change"));
-		// } else {
-		// 	console.warn(`Field with ID '${key}' not found.`);
-		// }
 	});
-	// let field = document.getElementById("ffrecordedby");
-	// field.value = storedOcrResponse;
 	return false;
 }
 
@@ -592,18 +637,18 @@ function nextProcessingImage() {
 	var totalImages = imgArr.length;
 	var nextImageIndex = (currentImageIndex + 1) % totalImages; // This ensures the index loops back to 0
 
-	// Correctly reference the new image URL from the JavaScript array
+	// reference the new image URL from the JS array
 	var newImgSrc = imgArr[nextImageIndex]; // This should be the URL of the next image
 
 	// Update the display of the current image index and count
 	document.getElementById('current-image-index').textContent = nextImageIndex;
 	document.getElementById('image-count').textContent = 'Image ' + (nextImageIndex + 1) + ' of ' + totalImages;
-	document.getElementById('activeimg').src = newImgSrc; // Set the new image source
+	document.getElementById('activeimg').src = newImgSrc;
 
 	// Optionally update the onload event for the new image
 	document.getElementById('activeimg').onload = function() {
-		initImageTool('activeimg-' + nextImageIndex); // You might need to adjust this if it uses the image ID dynamically
+		initImageTool('activeimg-' + nextImageIndex);
 	};
 
-	return false; // Prevent the default behavior of the link
+	return false;
 }
