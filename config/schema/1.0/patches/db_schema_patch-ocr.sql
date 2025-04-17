@@ -15,3 +15,8 @@ CREATE TABLE `ocr_results` (
   CONSTRAINT `FK_ocr_results_img` FOREIGN KEY (`imgid`) REFERENCES `images` (`imgid`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `FK_ocr_results_batch` FOREIGN KEY (`batchID`) REFERENCES `batch` (`batchID`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Add columns to the omoccurrences to indicate whether the record was human or machine generated and its confidence value (if machine generated)
+ALTER TABLE `omoccurrences` 
+    ADD COLUMN `is_machine_generated` BOOL DEFAULT 0,
+    ADD COLUMN `confidence_value` double DEFAULT NULL;
