@@ -2,7 +2,12 @@
 
 header('Content-Type: application/json');
 
-$imageUrl = 'http://data.huh.harvard.edu/1449378d-34e1-4ef9-a865-8b2ef47bf282/image';
+$imageUrl = isset($_POST['imgurl']) ? $_POST['imgurl'] : '';
+if (empty($imageUrl)) {
+    echo json_encode(["error" => "Missing image URL"]);
+    exit;
+}
+
 $url = 'http://ocr_middleware:8000/evaluate/azure?url=' . urlencode($imageUrl);
 
 $options = [

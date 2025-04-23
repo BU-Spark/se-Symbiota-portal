@@ -47,9 +47,13 @@ else include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/imgpro
 							<div>
 								<label for="ocr-method">Select OCR Method:</label>
 								<select name="ocr-method" id="ocr-method">
-									<option value="tess" selected><?php echo ("Tesseract OCR"); ?></option>
-									<option value="external"><?php echo ("External OCR"); ?></option>
-									<option value="others"><?php echo ("Other OCR"); ?></option>
+									<?php
+										$default = "tesseract";
+										foreach ($availalbe_OCR as $key => $label) {
+											$selected = ($key === $default) ? "selected" : "";
+											echo "<option value=\"$key\" $selected>$label</option>\n";
+										}
+									?>
 								</select>
 							</div>
 							<div>
@@ -64,32 +68,18 @@ else include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/imgpro
 							</div>
 						</div>
 						<div style="margin-top:15px">
-							<button 
-								value="OCR Image" 
-								onclick="quickEntryOcrImage(this, <?php echo $imgId; ?>, <?php echo $currentImageId; ?>);">
-								<?php echo $LANG['OCR_IMAGE']; ?>
-							</button>
+						<button 
+							value="OCR Image" 
+							onclick="
+								const imgElem = document.getElementById('activeimg-<?php echo $currentImageId; ?>');
+								const imgUrl = imgElem ? imgElem.src : '';
+								quickEntryOcrImage(this, <?php echo $imgId; ?>, <?php echo $currentImageId; ?>, imgUrl);
+							">
+							<?php echo $LANG['OCR_IMAGE']; ?>
+						</button>
 							<img id="workingcircle-tess-<?php echo $currentImageId; ?>" src="../../images/workingcircle.gif" style="display:none;" />
 						</div>
 					</fieldset>
-					<?php
-					if(!empty($DIGILEAP_OCR_ACTIVATED)){
-						?>
-						<fieldset class="ocr-box">
-							<legend>DigiLeap OCR</legend>
-							<input type="checkbox" id="ocrfull-digi" value="1" /> <?php echo $LANG['OCR_WHOLE_IMG']; ?><br/>
-							<div>
-								<button 
-									value="OCR Image" 
-									onclick="quickEntryOcrImage(this, 'tess', <?php echo $imgId; ?>, <?php echo $currentImageId; ?>);">
-									<?php echo $LANG['OCR_IMAGE']; ?>
-								</button>
-								<img id="workingcircle-digi-<?php echo $currentImageId; ?>" src="../../images/workingcircle.gif" style="display:none;" />
-							</div>
-						</fieldset>
-						<?php
-					}
-					?>
 				</div>
 				<div style="width:100%;clear:both;">
 					<div id="QEtfadddiv-<?php echo $currentImageId; ?>" style="">

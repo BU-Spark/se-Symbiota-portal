@@ -177,54 +177,6 @@ function ocrImage(ocrButton, target, imgidVar, imgCnt){
 	});
 }
 
-function quickEntryOcrImage(ocrButton, target, imgidVar, imgCnt){
-	ocrButton.disabled = true;
-	let wcElem = document.getElementById("workingcircle-"+target+"-"+imgCnt);
-	wcElem.style.display = "inline";
-	
-	let imgObj = document.getElementById("activeimg-"+imgCnt);
-	let xVar = 0;
-	let yVar = 0;
-	let wVar = 1;
-	let hVar = 1;
-	let ocrBestVar = 0;
-
-	if(document.getElementById("ocrfull-"+target).checked == false){
-		xVar = $(imgObj).imagetool("properties").x;
-		yVar = $(imgObj).imagetool("properties").y;
-		wVar = $(imgObj).imagetool("properties").w;
-		hVar = $(imgObj).imagetool("properties").h;
-	}
-	if(document.getElementById("ocrbest").checked == true){
-		ocrBestVar = 1;
-	}
-
-	$.ajax({
-		type: "POST",
-		url: "../quickentry/rpc/ocrimage.php",
-		data: { imgid: imgidVar, target: target, ocrbest: ocrBestVar, x: xVar, y: yVar, w: wVar, h: hVar }
-	}).done(function( msg ) {
-		let rawStr = msg;
-		document.getElementById("tfeditdiv-"+imgCnt).style.display = "none";
-		document.getElementById("tfadddiv-"+imgCnt).style.display = "block";
-		let addform = document.getElementById("ocraddform-"+imgCnt);
-		addform.rawtext.innerText = rawStr;
-		addform.rawtext.textContent = rawStr;
-		//Add OCR source with date
-		let today = new Date();
-		let dd = today.getDate();
-		let mm = today.getMonth()+1; //January is 0!
-		let yyyy = today.getFullYear();
-		if(dd<10) dd='0'+dd;
-		if(mm<10) mm='0'+mm;
-		if(target == "tess") target = "Tesseract";
-		else target = "Digi-Leap";
-		addform.rawsource.value = target+": "+yyyy+"-"+mm+"-"+dd;
-		
-		wcElem.style.display = "none";
-		ocrButton.disabled = false;
-	});
-}
 
 function nlpLbcc(nlpButton,prlid){
 	document.getElementById("workingcircle_lbcc-"+prlid).style.display = "inline";
@@ -332,40 +284,9 @@ function nextRawText(imgCnt,fragCnt){
 	return false;
 }
 
-let storedOcrResponse = "";
-// this state variable used to check the state of the textBox, either "needsValidation" or "ready" to populate the fieldss
-let updateState = "needsValidation";  
-
-function handleUpdateButtonClick() {
-	if (updateState === "needsValidation") {
-		confirmOCRresult();
-		updateState = "ready";
-		const btn = document.getElementById("updateButton");
-		btn.innerText = "Update Form";
-		btn.value = "Update Form";
-		return false;
-	} else {
-		return UpdateFromWithOCR();
-	}
-}
-
-// detect changes in the rawtext textarea
-window.addEventListener('DOMContentLoaded', function () {
-	const rawtextBox = document.getElementById("rawtext");
-	const updateButton = document.getElementById("updateButton");
-
-	if (rawtextBox) {
-		console.log("textBox udpated");
-		rawtextBox.addEventListener("input", function () {
-			updateState = "needsValidation";
-			updateButton.innerText = "Validate";
-			updateButton.value = "Validate";
-		});
-	}
-});
-
-function quickEntryOcrImage(ocrButton, imgidVar, imgCnt) {
+function quickEntryOcrImage(ocrButton, imgidVar, imgCnt, imgURl) {
 	console.log("Function quickEntryOcrImage called");
+	console.log(imgURl);
 	imgCnt = 0; // Reset image counter
 	ocrButton.disabled = true; // Disable button to prevent multiple clicks
 
@@ -388,7 +309,7 @@ function quickEntryOcrImage(ocrButton, imgidVar, imgCnt) {
 	$.ajax({
 		type: "POST",
 		url: ocrUrl,
-		data: { imgid: imgidVar, target: target },
+		data: { imgid: imgidVar, target: target, imgurl: imgURl },
 		success: function(response) {
 			let decodedResponse;
 			if (typeof response === "string") {
@@ -429,6 +350,38 @@ function quickEntryOcrImage(ocrButton, imgidVar, imgCnt) {
 		}
 	});
 }
+
+let storedOcrResponse = "";
+// this state variable used to check the state of the textBox, either "needsValidation" or "ready" to populate the fieldss
+let updateState = "needsValidation";  
+
+function handleUpdateButtonClick() {
+	if (updateState === "needsValidation") {
+		confirmOCRresult();
+		updateState = "ready";
+		const btn = document.getElementById("updateButton");
+		btn.innerText = "Update Form";
+		btn.value = "Update Form";
+		return false;
+	} else {
+		return UpdateFromWithOCR();
+	}
+}
+
+// detect changes in the rawtext textarea
+window.addEventListener('DOMContentLoaded', function () {
+	const rawtextBox = document.getElementById("rawtext");
+	const updateButton = document.getElementById("updateButton");
+
+	if (rawtextBox) {
+		console.log("textBox udpated");
+		rawtextBox.addEventListener("input", function () {
+			updateState = "needsValidation";
+			updateButton.innerText = "Validate";
+			updateButton.value = "Validate";
+		});
+	}
+});
 
 function confirmOCRresult() {
 	if (event) event.preventDefault();
