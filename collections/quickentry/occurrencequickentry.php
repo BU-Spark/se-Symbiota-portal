@@ -187,21 +187,11 @@ if($SYMB_UID){
 	if($action == 'saveOccurEdits'){
 		$statusStr = $occManager->editOccurrence($_POST,$isEditor);
 		$updateSuccess = $occManager->updateLastEdited($batchId, $currentImgId);
-	}
-	if($isEditor && $isEditor != 3){
-		if($action == 'Save OCR'){
-			$statusStr = $occManager->insertTextFragment($_POST['imgid'],$_POST['rawtext'],$_POST['rawnotes'],$_POST['rawsource']);
-			if(is_numeric($statusStr)){
-				$newPrlid = $statusStr;
-				$statusStr = '';
-			}
-		}
-		elseif($action == 'Save OCR Edits'){
-			$statusStr = $occManager->saveTextFragment($_POST['editprlid'],$_POST['rawtext'],$_POST['rawnotes'],$_POST['rawsource']);
-		}
-		elseif($action == 'Delete OCR'){
-			$statusStr = $occManager->deleteTextFragment($_POST['delprlid']);
-		}
+	} 
+	// save TODO: need to update this correctly
+	elseif ($action == 'saveOCR'){
+		$statusStr = $occManager->editOccurrence($_POST,$isEditor);
+		$updateSuccess = $occManager->updateLastEdited($batchId, $currentImgId);
 	}
 	if($isEditor){
 		//Available to full editors and taxon editors
@@ -368,6 +358,22 @@ if($SYMB_UID){
 		}
 	}
 
+	// save TODO: need to update this correctly
+	// if ($action == 'SaveOCR') {	
+	// 	// Save parsed OCR results into ocr_results table
+	// 	// $statusStr = $occManager->editOccurrence($_POST,$isEditor);
+	// 	// $updateSuccess = $occManager->updateLastEdited($batchId, $currentImgId);
+	// 	$ocrSaved = $occManager->saveOCRResultsToDB(
+	// 		$_POST['imgid'],
+	// 		$_POST['collid'],
+	// 		$_POST['rawtext']
+	// 	);
+	
+	// 	if (!$ocrSaved) {
+	// 		error_log("Failed to save OCR results: " . implode("; ", $occManager->errorArr));
+	// 	}
+	// }
+
 	if($goToMode){
 		//Adding new record, override query form and prime for current user's dataentry for the day
 		$occId = 0;
@@ -391,7 +397,8 @@ if($SYMB_UID){
 				unset($_SESSION['editorquery']);
 				$occIndex = false;
 			}
-		}
+		} 
+		// save TODO: need to update this correctly
 		elseif($action == 'saveOccurEdits'){
 			//Get query count and then reset; don't use new count for this display
 			$qryCnt = $occManager->getQueryRecordCount();

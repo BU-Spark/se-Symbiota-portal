@@ -83,7 +83,10 @@ else include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/imgpro
 				</div>
 				<div style="width:100%;clear:both;">
 					<div id="QEtfadddiv-<?php echo $currentImageId; ?>" style="">
-						<form id="quickocraddform-<?php echo $currentImageId; ?>" name="ocraddform-<?php echo $imgId; ?>" method="post" action="occurrencequickentry.php">
+						<!-- save TODO: need to update this correctly -->
+						<form id="ocrform" name="ocrform" action="occurrencequickentry.php" method="post" onsubmit="return verifyFullForm(this);">
+						<!-- <form method="post" action="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>"> -->
+						<!-- <form id="quickocraddform-<?php // echo $currentImageId; ?>" name="ocraddform-<?php // echo $imgId; ?>" method="post"> -->
 							<div>
 								<textarea id="rawtext" name="rawtext" rows="12" cols="48" style="width:97%;background-color:#F8F8F8;"></textarea>
 							</div>
@@ -101,11 +104,13 @@ else include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/imgpro
 								<input type="hidden" name="collid" value="<?php echo $collId; ?>" />
 								<input type="hidden" name="occindex" value="<?php echo $occIndex; ?>" />
 								<input type="hidden" name="csmode" value="<?php echo $crowdSourceMode; ?>" />
+								<input type="hidden" name="batchid" value="<?php echo $batchId; ?>" />
+								<input type="hidden" name="imgindex" value="<?php echo $currentImgIndex; ?>" />
+								<input type="hidden" name="barcode" value="<?php echo $barcode; ?>" />
 								<button id="updateButton" name="updateForm" name="updateForm" value="Validate" onclick="return handleUpdateButtonClick()" style="margin-top:10px;"><?php echo ("Validate"); ?></button>
-								<button name="submitaction" type="submit" value="Save OCR" style="margin-top:10px;"><?php echo $LANG['SAVE_OCR']; ?></button>
+								<button type="submit" id="SaveOCRButton" name="submitaction" value="SaveOCR"  style="margin-top:10px;" onclick="return saveOCRResults()"><?php echo $LANG['SAVE_OCR']; ?></button>
 							</div>
 						</form>
-						</div>
 					</div>
 					<div id="QEtfeditdiv-<?php echo $currentImageId; ?>" style="clear:both;">
 						<?php

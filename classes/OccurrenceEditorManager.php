@@ -2465,6 +2465,61 @@ class OccurrenceEditorManager {
 		return $barcode;
 	}
 
+	// Save TODO: need to update this
+	public function getOCRResults($imgID) {
+		$query = "SELECT results FROM ocr_results 
+              WHERE imgid = $imgID 
+              ORDER BY processed_date DESC 
+              LIMIT 1";
+
+		$result = $this->conn->query($query);
+		if ($result && $row = $result->fetch_assoc()) {
+			return json_decode($row['results'], true); // return as array
+		}
+
+		return null;
+	}
+	
+	public function saveOCRResultsToDB($imgid, $collid, $rawtext) {
+		$imgid = intval($imgid);
+		$collid = intval($collid);
+	
+		// Parse rawtext into a key-value array
+		$lines = preg_split("/\r\n|\n|\r/", trim($rawtext));
+		$parsed = [];
+	
+		foreach ($lines as $line) {
+			if (strpos($line, ':') !== false) {
+				list($key, $value) = explode(':', $line, 2);
+				$key = trim($key);
+				$value = trim($value);
+				if ($key !== '') {
+					$parsed[$key] = $value;
+				}
+			}
+		}
+	
+		$resultsJson = json_encode($parsed, JSON_UNESCAPED_UNICODE);
+	
+		$sql = "INSERT INTO ocr_results (imgid, collid, results, processed_date) 
+				VALUES (?, ?, ?, NOW())";
+	
+		$stmt = $this->conn->prepare($sql);
+		if (!$stmt) {
+			$this->errorArr[] = "Prepare failed: " . $this->conn->error;
+			return false;
+		}
+	
+		$stmt->bind_param("iis", $imgid, $collid, $resultsJson);
+		if ($stmt->execute()) {
+			return true;
+		} else {
+			$this->errorArr[] = "Execute failed: " . $stmt->error;
+			return false;
+		}
+	}
+	
+
 	public function getOneOccID($imgId) {
 		$occid = false;
 		$query = "SELECT occid FROM images WHERE imgid = '$imgId' LIMIT 1";
