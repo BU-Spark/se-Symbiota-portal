@@ -807,7 +807,17 @@ CREATE TABLE `omoccurrences` (
    const PKFIELDLIST = ' occid, ';
    const NUMBER_OF_PRIMARY_KEYS = 1;
    private $primaryKeyArray = array( 1 => 'occid'  ) ;
-   private $allFieldsArray = array( 0 => 'occid' , 1 => 'collid' , 2 => 'dbpk' , 3 => 'basisOfRecord' , 4 => 'occurrenceID' , 5 => 'catalogNumber' , 6 => 'otherCatalogNumbers' , 7 => 'ownerInstitutionCode' , 8 => 'institutionID' , 9 => 'collectionID' , 10 => 'datasetID' , 11 => 'institutionCode' , 12 => 'collectionCode' , 13 => 'family' , 14 => 'scientificName' , 15 => 'sciname' , 16 => 'tidinterpreted' , 17 => 'genus' , 18 => 'specificEpithet' , 19 => 'taxonRank' , 20 => 'infraspecificEpithet' , 21 => 'scientificNameAuthorship' , 22 => 'taxonRemarks' , 23 => 'identifiedBy' , 24 => 'dateIdentified' , 25 => 'identificationReferences' , 26 => 'identificationRemarks' , 27 => 'identificationQualifier' , 28 => 'typeStatus' , 29 => 'recordedBy' , 30 => 'recordNumber' , 31 => 'recordedById' , 32 => 'associatedCollectors' , 33 => 'eventDate' , 106 => 'latestDateCollected' , 34 => 'year' , 35 => 'month' , 36 => 'day' , 37 => 'startDayOfYear' , 38 => 'endDayOfYear' , 39 => 'verbatimEventDate' , 40 => 'habitat' , 41 => 'substrate' , 42 => 'fieldNotes' , 43 => 'fieldnumber' , 105 => 'eventID' , 44 => 'occurrenceRemarks' , 45 => 'informationWithheld' , 46 => 'dataGeneralizations' , 47 => 'associatedOccurrences' , 48 => 'associatedTaxa' , 49 => 'dynamicProperties' , 50 => 'verbatimAttributes' , 51 => 'behavior' , 52 => 'reproductiveCondition' , 53 => 'cultivationStatus' , 54 => 'establishmentMeans' , 55 => 'lifeStage' , 56 => 'sex' , 57 => 'individualCount' , 58 => 'samplingProtocol' , 101 => 'samplingEffort' , 59 => 'preparations' , 103 => 'waterBody' , 104 => 'locationID' , 60 => 'country' , 61 => 'stateProvince' , 62 => 'county' , 63 => 'municipality' , 64 => 'locality' , 65 => 'localitySecurity' , 66 => 'localitySecurityReason' , 67 => 'decimalLatitude' , 68 => 'decimalLongitude' , 69 => 'geodeticDatum' , 70 => 'coordinateUncertaintyInMeters' , 71 => 'footprintWKT' , 72 => 'coordinatePrecision' , 73 => 'locationRemarks' , 74 => 'verbatimCoordinates' , 75 => 'verbatimCoordinateSystem' , 76 => 'georeferencedBy' , 77 => 'georeferenceProtocol' , 78 => 'georeferenceSources' , 79 => 'georeferenceVerificationStatus' , 80 => 'georeferenceRemarks' , 81 => 'minimumElevationInMeters' , 82 => 'maximumElevationInMeters' , 83 => 'verbatimElevation' , 84 => 'previousIdentifications' , 85 => 'disposition' , 86 => 'genericcolumn1' , 87 => 'genericcolumn2' , 88 => 'modified' , 89 => 'language' , 91 => 'observeruid' , 92 => 'processingstatus' , 93 => 'recordEnteredBy' , 94 => 'duplicateQuantity' , 95 => 'labelProject' , 107 => 'dynamicFields' , 102 =>'dateEntered' , 96 => 'dateLastModified', 97 => 'minimumDepthInMeters', 98 => 'maximumDepthInMeters', 99 => 'verbatimDepth', 100 => 'storageLocation' ) ;
+   private $allFieldsArray = array( 0 => 'occid' , 1 => 'collid' , 2 => 'dbpk' , 3 => 'basisOfRecord' , 4 => 'occurrenceID' , 5 => 'catalogNumber' , 6 => 'otherCatalogNumbers' , 7 => 'ownerInstitutionCode' , 8 => 'institutionID' , 9 => 'collectionID' , 10 => 'datasetID' , 11 => 'institutionCode' , 
+                                    12 => 'collectionCode' , 13 => 'family' , 14 => 'scientificName' , 15 => 'sciname' , 16 => 'tidinterpreted' , 17 => 'genus' , 18 => 'specificEpithet' , 19 => 'taxonRank' , 20 => 'infraspecificEpithet' , 21 => 'scientificNameAuthorship' , 22 => 'taxonRemarks' , 
+                                    23 => 'identifiedBy' , 24 => 'dateIdentified' , 25 => 'identificationReferences' , 26 => 'identificationRemarks' , 27 => 'identificationQualifier' , 28 => 'typeStatus' , 29 => 'recordedBy' , 30 => 'recordNumber' , 31 => 'recordedById' , 32 => 'associatedCollectors' , 
+                                    33 => 'eventDate' , 106 => 'latestDateCollected' , 34 => 'year' , 35 => 'month' , 36 => 'day' , 37 => 'startDayOfYear' , 38 => 'endDayOfYear' , 39 => 'verbatimEventDate' , 40 => 'habitat' , 41 => 'substrate' , 42 => 'fieldNotes' , 43 => 'fieldnumber' , 
+                                    105 => 'eventID' , 44 => 'occurrenceRemarks' , 45 => 'informationWithheld' , 46 => 'dataGeneralizations' , 47 => 'associatedOccurrences' , 48 => 'associatedTaxa' , 49 => 'dynamicProperties' , 50 => 'verbatimAttributes' , 51 => 'behavior' , 52 => 'reproductiveCondition' , 
+                                    53 => 'cultivationStatus' , 54 => 'establishmentMeans' , 55 => 'lifeStage' , 56 => 'sex' , 57 => 'individualCount' , 58 => 'samplingProtocol' , 101 => 'samplingEffort' , 59 => 'preparations' , 103 => 'waterBody' , 104 => 'locationID' , 60 => 'country' , 
+                                    61 => 'stateProvince' , 62 => 'county' , 63 => 'municipality' , 64 => 'locality' , 65 => 'localitySecurity' , 66 => 'localitySecurityReason' , 67 => 'decimalLatitude' , 68 => 'decimalLongitude' , 69 => 'geodeticDatum' , 70 => 'coordinateUncertaintyInMeters' , 
+                                    71 => 'footprintWKT' , 72 => 'coordinatePrecision' , 73 => 'locationRemarks' , 74 => 'verbatimCoordinates' , 75 => 'verbatimCoordinateSystem' , 76 => 'georeferencedBy' , 77 => 'georeferenceProtocol' , 78 => 'georeferenceSources' , 79 => 'georeferenceVerificationStatus' , 
+                                    80 => 'georeferenceRemarks' , 81 => 'minimumElevationInMeters' , 82 => 'maximumElevationInMeters' , 83 => 'verbatimElevation' , 84 => 'previousIdentifications' , 85 => 'disposition' , 86 => 'genericcolumn1' , 87 => 'genericcolumn2' , 88 => 'modified' , 89 => 'language' , 
+                                    91 => 'observeruid' , 92 => 'processingstatus' , 93 => 'recordEnteredBy' , 94 => 'duplicateQuantity' , 95 => 'labelProject' , 107 => 'dynamicFields' , 102 =>'dateEntered' , 96 => 'dateLastModified', 97 => 'minimumDepthInMeters', 98 => 'maximumDepthInMeters', 99 => 'verbatimDepth', 
+                                    100 => 'storageLocation' ) ;
    private $selectDistinctFieldsArray = array( 1 => 'collid' , 2 => 'dbpk' , 4 => 'occurrenceID' , 5 => 'catalogNumber' , 7 => 'ownerInstitutionCode' , 13 => 'family' , 15 => 'sciname' , 16 => 'tidinterpreted' , 29 => 'recordedBy' , 30 => 'recordNumber' , 31 => 'recordedById' , 33 => 'eventDate' , 60 => 'country' , 61 => 'stateProvince' , 62 => 'county' , 63 => 'municipality' , 91 => 'observeruid' , 92 => 'processingstatus'  ) ;
 
    //---------------------------------------------------------------------------
@@ -1425,6 +1435,233 @@ CREATE TABLE `omoccurrences` (
        }
        return $returnvalue;
    }
+/*barcode*/
+   public function getbarcode() {
+      if ($this->barcode==null) {
+         return null;
+      } else {
+         return trim($this->l_stripslashes($this->barcode));
+      }
+   }
+   public function setbarcode($barcode) {
+      if (!ctype_digit(strval($barcode)) && trim(strval($barcode))!='' ) {
+         throw new Exception("Value must be an integer");
+      }
+      $this->occid = $this->l_addslashes($barcode);
+      $this->dirty = true;
+   }
+
+/*accesNum*/
+   public function getaccesNum() {
+      if ($this->accesNum==null) {
+         return null;
+      } else {
+         return trim($this->l_stripslashes($this->accesNum));
+      }
+   }
+   public function setaccesNum($accesNum) {
+      if (!ctype_digit(strval($accesNum)) && trim(strval($accesNum))!='' ) {
+         throw new Exception("Value must be an integer");
+      }
+      $this->occid = $this->l_addslashes($accesNum);
+      $this->dirty = true;
+   }
+
+/*filedUnder*/
+   public function getfiledUnder() {
+      if ($this->filedUnder==null) {
+         return null;
+      } else {
+         return trim($this->l_stripslashes($this->filedUnder));
+      }
+   }
+   public function setfiledUnder($filedUnder) {
+      $this->occid = $this->l_addslashes($filedUnder);
+      $this->dirty = true;
+   }
+
+/*currName*/
+   public function getcurrName() {
+      if ($this->currName==null) {
+         return null;
+      } else {
+         return trim($this->l_stripslashes($this->currName));
+      }
+   }
+   public function setcurrName($currName) {
+      $this->occid = $this->l_addslashes($currName);
+      $this->dirty = true;
+   }
+   
+/*idQualifier*/
+   public function getidQualifier() {
+      if ($this->idQualifier==null) {
+         return null;
+      } else {
+         return trim($this->l_stripslashes($this->idQualifier));
+      }
+   }
+   public function setidQualifier($idQualifier) {
+      $this->occid = $this->l_addslashes($idQualifier);
+      $this->dirty = true;
+   }
+
+/*detText*/
+   public function getdetText() {
+      if ($this->detText==null) {
+         return null;
+      } else {
+         return trim($this->l_stripslashes($this->detText));
+      }
+   }
+   public function setdetText($detText) {
+      $this->occid = $this->l_addslashes($detText);
+      $this->dirty = true;
+   }
+
+/*provenance*/
+   public function getprovenance() {
+      if ($this->provenance==null) {
+         return null;
+      } else {
+         return trim($this->l_stripslashes($this->provenance));
+      }
+   }
+   public function setprovenance($provenance) {
+      $this->occid = $this->l_addslashes($provenance);
+      $this->dirty = true;
+   }
+
+/*container*/
+   public function getcontainer() {
+      if ($this->container==null) {
+         return null;
+      } else {
+         return trim($this->l_stripslashes($this->container));
+      }
+   }
+   public function setcontainer($container) {
+      $this->occid = $this->l_addslashes($container);
+      $this->dirty = true;
+   }
+
+/*collTrip*/
+   public function getcollTrip() {
+      if ($this->collTrip==null) {
+         return null;
+      } else {
+         return trim($this->l_stripslashes($this->collTrip));
+      }
+   }
+   public function setcollTrip($collTrip) {
+      $this->occid = $this->l_addslashes($collTrip);
+      $this->dirty = true;
+   }
+
+/*geoWithin*/
+   public function getgeoWithin() {
+      if ($this->geoWithin==null) {
+         return null;
+      } else {
+         return trim($this->l_stripslashes($this->geoWithin));
+      }
+   }
+   public function setgeoWithin($geoWithin) {
+      $this->occid = $this->l_addslashes($geoWithin);
+      $this->dirty = true;
+   }
+
+/*highGeo*/
+   public function gethighGeo() {
+      if ($this->highGeo==null) {
+         return null;
+      } else {
+         return trim($this->l_stripslashes($this->highGeo));
+      }
+   }
+   public function sethighGeo($highGeo) {
+      $this->occid = $this->l_addslashes($highGeo);
+      $this->dirty = true;
+   }
+
+/*frequency*/
+   public function getfrequency() {
+      if ($this->frequency==null) {
+         return null;
+      } else {
+         return trim($this->l_stripslashes($this->frequency));
+      }
+   }
+   public function setfrequency($frequency) {
+      $this->occid = $this->l_addslashes($frequency);
+      $this->dirty = true;
+   }
+
+/*prepMethod*/
+   public function getprepMethod() {
+      if ($this->prepMethod==null) {
+         return null;
+      } else {
+         return trim($this->l_stripslashes($this->prepMethod));
+      }
+   }
+   public function setprepMethod($prepMethod) {
+      $this->occid = $this->l_addslashes($prepMethod);
+      $this->dirty = true;
+   }
+
+/*format*/
+   public function getformat() {
+      if ($this->format==null) {
+         return null;
+      } else {
+         return trim($this->l_stripslashes($this->format));
+      }
+   }
+   public function setformat($format) {
+      $this->occid = $this->l_addslashes($format);
+      $this->dirty = true;
+   }
+
+/*verbLat*/
+   public function getverbLat() {
+      if ($this->verbLat==null) {
+         return null;
+      } else {
+         return trim($this->l_stripslashes($this->verbLat));
+      }
+   }
+   public function setverbLat($verbLat) {
+      $this->occid = $this->l_addslashes($verbLat);
+      $this->dirty = true;
+   }
+
+/*verbLong*/
+   public function getverbLong() {
+      if ($this->verbLong==null) {
+         return null;
+      } else {
+         return trim($this->l_stripslashes($this->verbLong));
+      }
+   }
+   public function setverbLong($verbLong) {
+      $this->occid = $this->l_addslashes($verbLong);
+      $this->dirty = true;
+   }
+
+/*method*/
+   public function getmethod() {
+      if ($this->method==null) {
+         return null;
+      } else {
+         return trim($this->l_stripslashes($this->method));
+      }
+   }
+   public function setmethod($method) {
+      $this->occid = $this->l_addslashes($method);
+      $this->dirty = true;
+   }
+
 /*occid*/
    public function getoccid() {
        if ($this->occid==null) { 
@@ -3513,7 +3750,7 @@ CREATE TABLE `omoccurrences` (
         if ($this->occid!= NULL) {
             $sql  = 'UPDATE  omoccurrences SET ';
             $isInsert = false;
-            $sql .=  "  collid = ? ";
+            $sql .= " collid = ? ";
             $sql .=  ", dbpk = ? ";
             $sql .=  ", basisOfRecord = ? ";
             $sql .=  ", occurrenceID = ? ";

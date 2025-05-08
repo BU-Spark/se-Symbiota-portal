@@ -13,6 +13,78 @@ class OccurrenceEditorDeterminations extends OccurrenceEditorManager{
  		parent::__destruct();
 	}
 
+	public function getImgIndex($imgID) {
+		$imgIndex = false;
+		$query = "SELECT ordinal FROM batch_XREF WHERE imgid = '$imgID' LIMIT 1";
+		$result = $this->conn->query($query);
+
+		if ($result && $row = $result->fetch_assoc()) {
+			$imgIndex = $row['ordinal'];
+		}
+		$result->free();
+
+		return $imgIndex;
+	}
+
+	public function getlastEdit($batchID) {
+		$lastEditImgId = false;
+		$query = "SELECT last_edited FROM batch WHERE batchID = '$batchID' LIMIT 1";
+		$result = $this->conn->query($query);
+
+		if ($result && $row = $result->fetch_assoc()) {
+			$lastEditImgId = $row['last_edited'];
+		}
+		$result->free();
+
+		return $lastEditImgId;
+	}
+
+	public function getBatch($collid) {
+		$batchValues = array();	
+		$query = "SELECT batchID FROM batch WHERE collID = '$collid'";
+        $result = $this->conn->query($query);
+        while ($row = $result->fetch_assoc()) {
+            $batchValues[] = $row['batchID'];
+        }
+        $result->free();
+        return $batchValues;
+	}
+
+	public function getBatchName($batchID) {
+		$nameValues = array();
+		$query = "SELECT batch_name FROM batch WHERE batchID = '$batchID'";
+		$result = $this->conn->query($query);
+		while ($row = $result->fetch_assoc()) {
+			$nameValues[] = $row['batch_name'];
+		}
+		$result->free();
+		return $nameValues;
+	}
+
+	public function getImgIDs($batchID) {
+		$imgIDs = array();
+		$query = "SELECT imgid FROM batch_XREF WHERE batchID = '$batchID'";
+		$result = $this->conn->query($query);
+		while ($row = $result->fetch_assoc()) {
+			$imgIDs[] = $row['imgid'];
+		}
+		$result->free();
+		return $imgIDs;
+	}
+
+	public function getOneOccID($imgID) {
+		$occid = false;
+		$query = "SELECT occid FROM images WHERE imgid = '$imgID' LIMIT 1";
+		$result = $this->conn->query($query);
+
+		if ($result && $row = $result->fetch_assoc()) {
+			$occid = $row['occid'];
+		}
+		$result->free();
+
+		return $occid;
+	}
+	
 	public function getDetMap($identBy, $dateIdent, $sciName){
 		$retArr = array();
 		$hasCurrent = 0;
@@ -51,7 +123,7 @@ class OccurrenceEditorDeterminations extends OccurrenceEditorManager{
 		return $retArr;
 	}
 
-	public function addDetermination($detArr,$isEditor){
+	public function addDetermination($detArr, $isEditor){
 		global $LANG;
 		$status = $LANG['DET_SUCCESS'];
 		if(!$this->occid) return $LANG['ERROR_OCCID_NULL'];
@@ -81,39 +153,26 @@ class OccurrenceEditorDeterminations extends OccurrenceEditorManager{
 		if($isEditor==3 && is_numeric($detArr['confidenceranking'])) {
 			$notes .= ($notes?'; ':'').'ConfidenceRanking: '.$detArr['confidenceranking'];
 		}
+		$guid = UuidFactory::getUuidV4();
 		$sql = 'INSERT INTO omoccurdeterminations(occid, identifiedBy, dateIdentified, sciname, scientificNameAuthorship, '.
-			'identificationQualifier, iscurrent, printqueue, appliedStatus, identificationReferences, identificationRemarks, sortsequence) '.
+			'identificationQualifier, iscurrent, printqueue, appliedStatus, identificationReferences, identificationRemarks, recordID, sortsequence) '.
 			'VALUES ('.$this->occid.',"'.$this->cleanInStr($detArr['identifiedby']).'","'.$this->cleanInStr($detArr['dateidentified']).'","'.
 			$sciname.'",'.($detArr['scientificnameauthorship']?'"'.$this->cleanInStr($detArr['scientificnameauthorship']).'"':'NULL').','.
 			($detArr['identificationqualifier']?'"'.$this->cleanInStr($detArr['identificationqualifier']).'"':'NULL').','.
 			$detArr['makecurrent'].','.$detArr['printqueue'].','.($isEditor==3?0:1).','.
 			($detArr['identificationreferences']?'"'.$this->cleanInStr($detArr['identificationreferences']).'"':'NULL').','.
-			($notes?'"'.$notes.'"':'NULL').','.
-			$sortSeq.')';
+			($notes?'"'.$notes.'"':'NULL').',"'.$guid.'",'.$sortSeq.')';
 		if($this->conn->query($sql)){
-			//Create and insert Symbiota GUID for determination(UUID)
-			$guid = UuidFactory::getUuidV4();
-			$detId = $this->conn->insert_id;
-			if(!$this->conn->query('INSERT INTO guidoccurdeterminations(guid,detid) VALUES("'.$guid.'",'.$detId.')')){
-				$status .= ' ('.$LANG['WARNING_GUID_1_FAILED'].')';
-			}
 			//If is current, move old determination from omoccurrences to omoccurdeterminations and then load new record into omoccurrences
 			if($isCurrent){
 				//If determination is already in omoccurdeterminations, INSERT will fail move omoccurrences determination to  table
+				$guid = UuidFactory::getUuidV4();
 				$sqlInsert = 'INSERT INTO omoccurdeterminations(occid, identifiedBy, dateIdentified, sciname, scientificNameAuthorship, '.
-					'identificationQualifier, identificationReferences, identificationRemarks, sortsequence) '.
+					'identificationQualifier, identificationReferences, identificationRemarks, recordID, sortsequence) '.
 					'SELECT occid, IFNULL(identifiedby,"unknown") AS idby, IFNULL(dateidentified,"s.d.") AS di, '.
-					'sciname, scientificnameauthorship, identificationqualifier, identificationreferences, identificationremarks, 10 AS sortseq '.
+					'sciname, scientificnameauthorship, identificationqualifier, identificationreferences, identificationremarks, "'.$guid.'", 10 AS sortseq '.
 					'FROM omoccurrences WHERE (occid = '.$this->occid.') AND (identifiedBy IS NOT NULL OR dateIdentified IS NOT NULL OR sciname IS NOT NULL)';
-				if($this->conn->query($sqlInsert)){
-					//Create and insert Symbiota GUID for determination(UUID)
-					$guid = UuidFactory::getUuidV4();
-					$detId = $this->conn->insert_id;
-					if(!$this->conn->query('INSERT INTO guidoccurdeterminations(guid,detid) VALUES("'.$guid.'",'.$detId.')')){
-						$status .= ' ('.$LANG['WARNING_GUID_2_FAILED'].')';
-					}
-				}
-
+				$this->conn->query($sqlInsert);
 				$tidToAdd = $detArr['tidtoadd'];
 				if($tidToAdd && !is_numeric($tidToAdd)) $tidToAdd = 0;
 
@@ -170,7 +229,7 @@ class OccurrenceEditorDeterminations extends OccurrenceEditorManager{
 			}
 		}
 		else{
-			$status = LANG['ERROR_FAILED_ADD'].': '.$this->conn->error;
+			$status = $LANG['ERROR_FAILED_ADD'].': '.$this->conn->error;
 		}
 		return $status;
 	}
@@ -208,19 +267,10 @@ class OccurrenceEditorDeterminations extends OccurrenceEditorManager{
 			FROM omoccurdeterminations WHERE detid = '.$detId;
 		$rs = $this->conn->query($sql);
 		while($r = $rs->fetch_assoc()){
-			$detArr = array();
 			$isCurrent = $r['isCurrent'];
 			$occid = $r['occid'];
-			foreach($r as $k => $v){
-				if($v) $detArr[$k] = $this->encodeStr($v);
-			}
-			//Archive determinations
-			$detObj = json_encode($detArr);
-			$sqlArchive = 'UPDATE guidoccurdeterminations '.
-			'SET archivestatus = 1, archiveobj = "'.$this->cleanInStr($detObj).'" '.
-			'WHERE (detid = '.$detId.')';
-			$this->conn->query($sqlArchive);
 		}
+		$rs->free();
 
 		if($isCurrent){
 			$prevDetId = 0;
@@ -273,19 +323,13 @@ class OccurrenceEditorDeterminations extends OccurrenceEditorManager{
 		global $LANG;
 		$status = $LANG['DET_NOW_CURRENT'];
 		//Make sure determination data within omoccurrences is in omoccurdeterminations. If already there, INSERT will fail and nothing lost
+		$guid = UuidFactory::getUuidV4();
 		$sqlInsert = 'INSERT INTO omoccurdeterminations(occid, identifiedBy, dateIdentified, sciname, scientificNameAuthorship, '.
-			'identificationQualifier, identificationReferences, identificationRemarks, sortsequence) '.
+			'identificationQualifier, identificationReferences, identificationRemarks, recordID, sortsequence) '.
 			'SELECT occid, IFNULL(identifiedby,"unknown") AS idby, IFNULL(dateidentified,"s.d.") AS iddate, sciname, scientificnameauthorship, '.
-			'identificationqualifier, identificationreferences, identificationremarks, 10 AS sortseq '.
+			'identificationqualifier, identificationreferences, identificationremarks, "'.$guid.'", 10 AS sortseq '.
 			'FROM omoccurrences WHERE (occid = '.$this->occid.') AND (identifiedBy IS NOT NULL OR dateIdentified IS NOT NULL OR sciname IS NOT NULL)';
-		if($this->conn->query($sqlInsert)){
-			//Create and insert Symbiota GUID for determination(UUID)
-			$guid = UuidFactory::getUuidV4();
-			if(!$this->conn->query('INSERT INTO guidoccurdeterminations(guid,detid) VALUES("'.$guid.'",'.$this->conn->insert_id.')')){
-				$status .= ' ('.$LANG['WARNING_GUID_1_FAILED'].')';
-			}
-		}
-		//echo "<div>".$sqlInsert."</div>";
+		$this->conn->query($sqlInsert);
 		//Update omoccurrences to reflect this determination
 		$tid = 0;
 		$sStatus = 0;
@@ -350,10 +394,7 @@ class OccurrenceEditorDeterminations extends OccurrenceEditorManager{
 	}
 
 	public function addNomAdjustment($detArr,$isEditor){
-		$sql = 'SELECT identificationQualifier '.
-			'FROM omoccurrences '.
-			'WHERE occid = '.$this->occid;
-		//echo "<div>".$sql."</div>";
+		$sql = 'SELECT identificationQualifier FROM omoccurrences WHERE occid = '.$this->occid;
 		$rs = $this->conn->query($sql);
 		if($r = $rs->fetch_object()){
 			$detArr['identificationqualifier'] = $r->identificationQualifier;
@@ -361,40 +402,55 @@ class OccurrenceEditorDeterminations extends OccurrenceEditorManager{
 		$rs->free();
 		$detArr['identifiedby'] = 'Nomenclatural Adjustment';
 		$detArr['dateidentified'] = date('F').' '.date('j').', '.date('Y');
-		$this->addDetermination($detArr,$isEditor);
+		$this->addDetermination($detArr, $isEditor);
 	}
 
-	public function getNewDetItem($catNum,$sciName,$allCatNum=0){
+	public function getNewDetItem($catNum, $sciName, $allCatNum = 0){
 		$retArr = array();
 		if($catNum || $sciName){
-			$sql = 'SELECT occid, IFNULL(catalogNumber, othercatalognumbers) AS catalogNumber, sciname, CONCAT_WS(" ",recordedby,IFNULL(recordnumber,eventdate)) AS collector, '.
-				'CONCAT_WS(", ",country,stateprovince,county,locality) AS locality '.
-				'FROM omoccurrences '.
-				'WHERE collid = '.$this->collId.' ';
+			$sql = 'SELECT o.occid, o.catalogNumber, o.otherCatalogNumbers, o.sciname, CONCAT_WS(" ", o.recordedby, IFNULL(o.recordnumber, o.eventdate)) AS collector, '.
+				'CONCAT_WS(", ", o.country, o.stateprovince, o.county, o.locality) AS locality ';
+			$catNumArr = explode(',',$catNum);
 			if($catNum){
-				$catNumArr = explode(',',$catNum);
 				foreach($catNumArr as $k => $u){
 					$u = trim($u);
 					if($u) $catNumArr[$k] = $this->cleanInStr($u);
 					else unset($catNumArr[$k]);
 				}
-				$sql .= 'AND (catalogNumber IN("'.implode('","',$catNumArr).'") ';
-				if($allCatNum) $sql .= 'OR otherCatalogNumbers IN("'.implode('","',$catNumArr).'")';
+				if($allCatNum){
+					$sql .= ', i.identifierValue FROM omoccurrences o LEFT JOIN omoccuridentifiers i ON o.occid = i.occid ';
+				}
+				else{
+					$sql .= 'FROM omoccurrences o ';
+				}
+				$catNumStr = implode('","',$catNumArr);
+				$sql .= 'WHERE o.collid = '.$this->collId.' AND (o.catalogNumber IN("'.$catNumStr.'") ';
+				if($allCatNum){
+					$sql .= 'OR o.otherCatalogNumbers IN("'.$catNumStr.'") OR i.identifierValue IN("'.$catNumStr.'") ';
+				}
 				$sql .= ') ';
 			}
 			elseif($sciName){
-				$sql .= 'AND sciname = "'.$this->cleanInStr($sciName).'" ';
+				$sql .= 'FROM omoccurrences o WHERE o.collid = '.$this->collId.' AND o.sciname = "'.$this->cleanInStr($sciName).'" ';
 			}
 			$sql .= 'LIMIT 400 ';
-			//echo $sql;
 			$rs = $this->conn->query($sql);
 			while($r = $rs->fetch_object()){
-				$loc = $r->locality;
-				if(strlen($loc) > 500) $loc = substr($loc,400);
-				$retArr[$r->occid]['cn'] = $r->catalogNumber;
-				$retArr[$r->occid]['sn'] = $r->sciname;
-				$retArr[$r->occid]['coll'] = $r->collector;
-				$retArr[$r->occid]['loc'] = $loc;
+				if(!array_key_exists($r->occid, $retArr)){
+					$retArr[$r->occid]['sn'] = $r->sciname;
+					$retArr[$r->occid]['coll'] = $r->collector;
+					$loc = $r->locality;
+					if(strlen($loc) > 500) $loc = substr($loc,400);
+					$retArr[$r->occid]['loc'] = $loc;
+					$cn = $r->catalogNumber;
+					if($r->otherCatalogNumbers){
+						if(!$cn || in_array($r->otherCatalogNumbers, $catNumArr)) $cn = $r->otherCatalogNumbers;
+					}
+					$retArr[$r->occid]['cn'] = $cn;
+				}
+				if(!empty($r->identifierValue)){
+					if(!$retArr[$r->occid]['cn'] || in_array($r->identifierValue, $catNumArr)) $retArr[$r->occid]['cn'] = $r->identifierValue;
+				}
 			}
 			$rs->free();
 		}

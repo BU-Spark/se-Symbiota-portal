@@ -52,10 +52,12 @@ class ObservationSubmitManager {
 
 			$verbatimElevation = $postArr['verbatimelevation'];
 			if(is_numeric($verbatimElevation)) $verbatimElevation .= 'ft.';
-			$sql = 'INSERT INTO omoccurrences(collid, basisofrecord, family, sciname, scientificname, '.
+			$sql = 'INSERT INTO omoccurrences(collid, '.
+				'frequency, prepMethod, format, verbLat, verbLong, method, modified, dateLastModified'.
+				'basisofrecord, family, sciname, scientificname, '.
 				'scientificNameAuthorship, tidinterpreted, taxonRemarks, identifiedBy, dateIdentified, '.
 				'identificationReferences, recordedBy, recordNumber, '.
-				'associatedCollectors, eventDate, year, month, day, startDayOfYear, habitat, substrate, occurrenceRemarks, associatedTaxa, '.
+				'associas, evetedCollectorntDate, year, month, day, startDayOfYear, habitat, substrate, occurrenceRemarks, associatedTaxa, '.
 				'verbatimattributes, reproductiveCondition, cultivationStatus, establishmentMeans, country, '.
 				'stateProvince, county, locality, localitySecurity, decimalLatitude, decimalLongitude, '.
 				'geodeticDatum, coordinateUncertaintyInMeters, georeferenceRemarks, minimumElevationInMeters, verbatimElevation, observeruid, dateEntered) '.
@@ -96,29 +98,37 @@ class ObservationSubmitManager {
 				//Link observation to checklist
 				if(isset($postArr['clid'])){
 					$clid = $postArr['clid'];
-					$finalTid = 0;
+					$clTaxaID = 0;
 					if($tid){
 						//If synonym is already linked, get tid of linked taxon. If not, then add using current tid
-						$sql = 'SELECT cltl.tid '.
+						$sql = 'SELECT cltl.tid, cltl.clTaxaID '.
 							'FROM fmchklsttaxalink cltl INNER JOIN taxstatus ts1 ON cltl.tid = ts1.tid '.
 							'INNER JOIN taxstatus ts2 ON ts1.tidaccepted = ts2.tidaccepted '.
 							'WHERE ts1.taxauthid = 1 AND ts2.taxauthid = 1 AND cltl.clid = '.$clid.' AND ts2.tid = '.$tid;
 						$rs = $this->conn->query($sql);
 						while($r = $rs->fetch_object()){
-							$finalTid = $r->tid;
-							if($finalTid == $tid) break;
+							$clTaxaID = $r->clTaxaID;
+							if($r->tid == $tid) break;
 						}
 						$rs->free();
-						if(!$finalTid){
-							$sql = 'INSERT INTO fmchklsttaxalink(tid,clid) '.
-								'VALUES('.$tid.','.$clid.')';
-							$this->conn->query($sql);
-							$finalTid = $tid;
+						if(!$clTaxaID){
+							$sql = 'INSERT INTO fmchklsttaxalink(tid,clid) VALUES(?,?)';
+							if($stmt = $this->conn->prepare($sql)){
+								$stmt->bind_param('ii', $tid, $clid);
+								$stmt->execute();
+								$clTaxaID = $stmt->insert_id;
+								$stmt->close();
+							}
+						}
+						if($clTaxaID){
+							$sql = 'INSERT INTO fmvouchers(clTaxaID, occid) VALUES(?,?) ';
+							if($stmt = $this->conn->prepare($sql)){
+								$stmt->bind_param('ii', $clTaxaID, $newOccId);
+								$stmt->execute();
+								$stmt->close();
+							}
 						}
 					}
-					$sql = 'INSERT INTO fmvouchers(tid,clid,occid) '.
-						'VALUES('.($finalTid?$finalTid:'NULL').','.$clid.','.$newOccId.') ';
-					$this->conn->query($sql);
 				}
 				//Load images
 				if(!$this->addImages($postArr,$newOccId,$tid)){
